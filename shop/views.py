@@ -33,7 +33,7 @@ def registeration(response):
     else:
         form = RegisterUserForm()
 
-    return render(response, 'shop/registeration.html', {"form": form})
+    return render(response, 'shop/registration.html', {"form": form})
 
 
 def tracker(request):
