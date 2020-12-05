@@ -1,0 +1,17 @@
+{% extends 'shop/basic.html' %}
+
+{% block title%} Register - Egreen Store{% endblock %}
+{% block body %}
+<form method="POST" class="form-group">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Register</button>
+    </form>
+{% endblock %}
+{% block js %}
+<script>
+    function customerSubmit(){
+
+    }
+</script>
+{% endblock %}
