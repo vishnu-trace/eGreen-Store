@@ -23,7 +23,7 @@ def about(request):
     return render(request, 'shop/about.html')
 
 
-def registeration(response):
+def registration(response):
     if response.method == "POST":
         form = RegisterUserForm(response.POST)
         if form.is_valid():
