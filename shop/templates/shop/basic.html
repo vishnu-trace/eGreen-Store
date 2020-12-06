@@ -42,7 +42,6 @@
                             Checkout
                         </button>
                     </a>
-
                 </li>
             </ul>
             <form method='get' action='/shop/search/' class="form-inline my-2 my-lg-0">
@@ -53,6 +52,7 @@
 sagittis lacus vel augue laoreet rutrum faucibus.">
                 Cart(<span id="cart">0</span>)
             </button>
+            <button class='btn btn-primary mx-2 my-2' onclick='clearCart()' id='clearCart'>Clear Cart</button>
         </div>
     </nav>
     {% block body %} {% endblock %}
