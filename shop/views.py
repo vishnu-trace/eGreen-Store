@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from .models import Product
 from math import ceil
 from django.shortcuts import render, redirect
