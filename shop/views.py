@@ -23,7 +23,7 @@ def about(request):
     return render(request, 'shop/about.html')
 
 
-def registration(response):
+def login(response):
     if response.method == "POST":
         form = RegisterUserForm(response.POST)
         if form.is_valid():
@@ -33,7 +33,7 @@ def registration(response):
     else:
         form = RegisterUserForm()
 
-    return render(response, 'shop/registration.html', {"form": form})
+    return render(response, 'shop/login.html', {"form": form})
 
 
 def tracker(request):
