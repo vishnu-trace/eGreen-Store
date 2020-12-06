@@ -127,7 +127,7 @@ function updatePopover(cart) {
         i = i + 1;
 
     }
-    popStr = popStr + "</div> "
+    popStr = popStr + "</div> <button class='btn btn-primary mx-2 my-2' onclick='clearCart()' id='clearCart'>Clear Cart</button> ";
     console.log(popStr);
     document.getElementById('popcart').setAttribute('data-content', popStr);
     $('#popcart').popover('show');
