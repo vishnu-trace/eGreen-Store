@@ -35,6 +35,14 @@ def login(response):
     return render(response, 'shop/login.html', {"form": form})
 
 
+def Customer(response):
+    return render(response, 'shop/Customer.login')
+
+
+def Farmer(response):
+    return render(response, 'shop/Farmer.login')
+
+
 def tracker(request):
     return render(request, 'shop/tracker.html')
 
