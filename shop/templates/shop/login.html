@@ -1,11 +1,11 @@
 {% extends 'shop/basic.html' %}
-
+{% load widget_tweaks %}
 {% block title%} Register - Egreen Store{% endblock %}
 {% block body %}
 
 <div class="container">
     <div class="jumbotron">
-        <h1>Login here :</h1>
+        <h2 style="margin-bottom: 1em;">Login</h2>
         <form method="POST" class="form-group">
             {% csrf_token %}
             {# A more "HTML" way of creating the login form#}
@@ -45,7 +45,7 @@
             </div>
 
                 <a href='/Customer.html'>
-                    <button class='btn btn-primary' id='Customer'>
+                    <button class='btn btn-primary' id='Customer' onclick="location.href='{% url 'Customer' %}'">
                         Customer
                     </button>
                 </a>

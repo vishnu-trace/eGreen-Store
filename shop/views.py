@@ -23,6 +23,11 @@ def about(request):
 
 
 def login(response):
+
+    return render(response, 'shop/login.html')
+
+
+def Customer(response):
     if response.method == "POST":
         form = RegisterUserForm(response.POST)
         if form.is_valid():
@@ -31,16 +36,11 @@ def login(response):
         return redirect("/home")
     else:
         form = RegisterUserForm()
-
-    return render(response, 'shop/login.html', {"form": form})
-
-
-def Customer(response):
-    return render(response, 'shop/Customer.login')
+    return render(response, 'shop/customer.html', {"form": form})
 
 
 def Farmer(response):
-    return render(response, 'shop/Farmer.login')
+    return render(response, 'shop/farmer.html')
 
 
 def tracker(request):
