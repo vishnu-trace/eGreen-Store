@@ -21,7 +21,7 @@ class Product(models.Model):
 class Farmer(models.Model):
     Farmer_id = models.AutoField
     SF_name = models.CharField(max_length=32)
-    email = models.CharField(max_length=64, default="")
+    email = models.CharField(max_length=64, default="", unique=True)
     phone = models.CharField(max_length=10, default="")
     address = models.CharField(max_length=500, default="")
     password = models.CharField(max_length=256, default="")
@@ -33,7 +33,7 @@ class Farmer(models.Model):
 class Customer(models.Model):
     Cust_id = models.AutoField
     CU_name = models.CharField(max_length=32)
-    email = models.CharField(max_length=64, default="")
+    email = models.CharField(max_length=64, default="", unique=True)
     phone = models.CharField(max_length=10, default="")
     address = models.CharField(max_length=500, default="")
     password = models.CharField(max_length=256, default="")

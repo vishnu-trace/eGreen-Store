@@ -3,16 +3,23 @@
 {% block title%} Register - Egreen Store{% endblock %}
 {% block body %}
 
+{% if messages %}
+        {% for message in messages %}
+         {% if message.tags %}  <script>alert("{{ message }}")</script> {% endif %}
+        {% endfor %}
+{% endif %}
+
 <div class="container col-md-4" style="margin-top: 4em; margin-bottom: 5em;">
     <div class="jumbotron">
         <h2 class="cold-md-6" style="margin-bottom: 1em;">Login</h2>
-    <form action="/customer/" method="post">
+    <form action="../login/" method="post">
+        {% csrf_token %}
         <!--for loop to print form elements-->
         {% for field in form %}
             <div class="form-group align-items-center">
-                {{ field.errors }}
                 {{ field.label_tag }}
                 {% render_field field class="form-control" %}
+                {{ field.errors }}
             </div>
         {% endfor %}
         <input type="submit" value="Submit" class="btn btn-primary" style="margin-bottom: 2em;">
@@ -20,7 +27,7 @@
             <a class='btn btn-secondary' id='customer' href='../registration/customer/'>
                 Customer
             </a>
-            <a href='../registration/farmer/'class='btn btn-secondary' id='farmer'>
+            <a href='../registration/farmer/' class='btn btn-secondary' id='farmer'>
             Farmer
             </a>
     </form>
@@ -28,13 +35,5 @@
 </div>
 {% endblock %}
 {% block js %}
-<script>
-    function customerSubmit(){
 
-    }
-
-
-
-
-</script>
 {% endblock %}

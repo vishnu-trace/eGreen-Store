@@ -1,6 +1,13 @@
 {% extends 'shop/basic.html' %}
 {% block title%} Checkout - Egreen Store{% endblock %}
 {% block body %}
+{% if messages %}
+        {% for message in messages %}
+         {% if message.tags %}  <script>alert("{{ message }}")</script> {% endif %}
+
+        {% endfor %}
+
+{% endif %}
 <div class="container">
     <div class="col my-4">
         <h2>Step 1 - Egreen Store Express Checkout - Review Your Cart Items</h2>

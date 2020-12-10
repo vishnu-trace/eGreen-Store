@@ -39,6 +39,13 @@ padding-right: 0;
 {% endblock %}
 {% block body %}
 {% load static %}
+{% if messages %}
+        {% for message in messages %}
+         {% if message.tags %}  <script>alert("{{ message }}")</script> {% endif %}
+
+        {% endfor %}
+
+{% endif %}
 <div class="container">
     <!--Slideshow starts here -->
     {% for product, range, nSlides in allProds %}
