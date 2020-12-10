@@ -1,7 +1,7 @@
 from .models import Product
 from math import ceil
 from django.shortcuts import render, redirect
-from .forms import RegisterUserForm
+from .forms import RegisterUserForm, RegisterFarmerForm, LoginForm
 
 
 # Create your views here.
@@ -23,11 +23,18 @@ def about(request):
 
 
 def login(response):
+    if response.method == "POST":
+        form = LoginForm(response.POST)
+        if form.is_valid():
+            form.save()
 
-    return render(response, 'shop/login.html')
+        return redirect("/home")
+    else:
+        form = LoginForm()
+    return render(response, 'shop/login.html', {"form": form})
 
 
-def Customer(response):
+def customer(response):
     if response.method == "POST":
         form = RegisterUserForm(response.POST)
         if form.is_valid():
@@ -36,11 +43,19 @@ def Customer(response):
         return redirect("/home")
     else:
         form = RegisterUserForm()
-    return render(response, 'shop/customer.html', {"form": form})
+    return render(response, 'shop/registration/customer.html', {"form": form})
 
 
-def Farmer(response):
-    return render(response, 'shop/farmer.html')
+def farmer(response):
+    if response.method == "POST":
+        form = RegisterFarmerForm(response.POST)
+        if form.is_valid():
+            form.save()
+
+        return redirect("/home")
+    else:
+        form = RegisterFarmerForm()
+    return render(response, 'shop/registration/farmer.html', {"form": form})
 
 
 def tracker(request):

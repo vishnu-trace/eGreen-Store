@@ -3,8 +3,9 @@
 {% block title%} Register - Egreen Store{% endblock %}
 {% block body %}
 <div class="container col-md-4" style="margin-top: 3em; margin-bottom: 5em;">
-<h2 class="cold-md-6" style="margin-bottom: 1em;">Customer Registration Form</h2>
+<h2 class="cold-md-6" style="margin-bottom: 1em;">Farmer Registration Form</h2>
 <form action="/customer/" method="post">
+    <!--for loop to print form elements-->
     {% for field in form %}
     <div class="form-group align-items-center">
         {{ field.errors }}
