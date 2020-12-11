@@ -41,10 +41,9 @@ def login(response):
                     messages.error(response, 'Invalid password or email.')
                     return render(response, 'shop/login.html', {"form": form})
                 cust = Customer.objects.get(email=email)
-                password = hashlib.sha256(password.encode())
 
                 # Password verification
-                if cust.password != password.hexdigest():
+                if cust.checkPassword(password) is False:
                     messages.error(response, 'Invalid password or email.')
                     return render(response, 'shop/login.html', {"form": form}, )
             else:
@@ -53,10 +52,9 @@ def login(response):
                     messages.error(response, 'Invalid password or email.')
                     return render(response, 'shop/login.html', {"form": form})
                 farm = Farmer.objects.get(email=email)
-                password = hashlib.sha256(password.encode())
 
                 # Password verification
-                if farm.password != password.hexdigest():
+                if farm.checkPassword(password) is False:
                     messages.error(response, 'Invalid password or email.')
                     return render(response, 'shop/login.html', {"form": form}, )
 
@@ -89,6 +87,7 @@ def customer(response):
                 form.add_error('email', "This email is already registered.")
                 return render(response, 'shop/registration/customer.html', {"form": form})
             password = hashlib.sha256(password.encode())
+
             # New Object Creation
             newCust = Customer(CU_name=name, email=email, phone=phone, address=address, password=password.hexdigest())
             newCust.save()
@@ -103,6 +102,7 @@ def farmer(response):
     if response.method == "POST":
         form = RegisterFarmerForm(response.POST)
         if form.is_valid():
+
             # Form Cleaning
             name = form.cleaned_data['farmerName']
             email = form.cleaned_data['email']
