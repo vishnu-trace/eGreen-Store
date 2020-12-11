@@ -20,6 +20,7 @@ class Product(models.Model):
 
 
 class Farmer(models.Model):
+    objects = None
     Farmer_id = models.AutoField
     SF_name = models.CharField(max_length=32)
     email = models.CharField(max_length=64, default="", unique=True)
@@ -39,6 +40,7 @@ class Farmer(models.Model):
 
 
 class Customer(models.Model):
+    objects = None
     Cust_id = models.AutoField
     CU_name = models.CharField(max_length=32)
     email = models.CharField(max_length=64, default="", unique=True)
