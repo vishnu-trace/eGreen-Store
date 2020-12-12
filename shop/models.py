@@ -1,4 +1,5 @@
 from django.db import models
+import hashlib
 
 
 # Create your models here.
@@ -25,7 +26,14 @@ class Farmer(models.Model):
     email = models.CharField(max_length=64, default="", unique=True)
     phone = models.CharField(max_length=10, default="")
     address = models.CharField(max_length=500, default="")
-    password = models.CharField(max_length=256, default="")
+    password = models.CharField(max_length=64, default="")
+
+    # Function to verify object password to the password provided
+    def checkPassword(self, password):
+        password = hashlib.sha256(password.encode()).hexdigest()
+        if password == self.password:
+            return True
+        return False
 
     def __str__(self):
         return self.SF_name
@@ -38,7 +46,14 @@ class Customer(models.Model):
     email = models.CharField(max_length=64, default="", unique=True)
     phone = models.CharField(max_length=10, default="")
     address = models.CharField(max_length=500, default="")
-    password = models.CharField(max_length=256, default="")
+    password = models.CharField(max_length=64, default="")
+
+    # Function to verify object password to the password provided
+    def checkPassword(self, password):
+        password = hashlib.sha256(password.encode()).hexdigest()
+        if password == self.password:
+            return True
+        return False
 
     def __str__(self):
         return self.CU_name

@@ -8,6 +8,7 @@ import hashlib
 
 # Create your views here.
 def index(request):
+    loggedIn = False
     allProds = []
     catprods = Product.objects.values('category', 'id')
     cats = {item['category'] for item in catprods}
@@ -16,7 +17,18 @@ def index(request):
         n = len(prod)
         nSlides = n // 4 + ceil((n / 4) - (n // 4))
         allProds.append([prod, range(1, nSlides), nSlides])
-    params = {'allProds': allProds}
+
+    # Test for session with member email
+    try:
+        if Customer.objects.all().filter(email=request.session['member_id']).exists() or \
+                Farmer.objects.all().filter(email=request.session['member_id']).exists():
+            loggedIn = True
+    except AttributeError:
+        pass
+    except KeyError:
+        pass
+    print(loggedIn)
+    params = {'allProds': allProds, 'loggedIn': loggedIn}
     return render(request, 'shop/index.html', params)
 
 
@@ -41,30 +53,53 @@ def login(response):
                     messages.error(response, 'Invalid password or email.')
                     return render(response, 'shop/login.html', {"form": form})
                 cust = Customer.objects.get(email=email)
-                password = hashlib.sha256(password.encode())
 
                 # Password verification
-                if cust.password != password.hexdigest():
+                if cust.checkPassword(password) is False:
                     messages.error(response, 'Invalid password or email.')
                     return render(response, 'shop/login.html', {"form": form}, )
+
+                # Session Setup
+                response.session['member_id'] = cust.email
+                response.session['customer'] = True
             else:
                 # Farmer email Verification
                 if not Farmer.objects.all().filter(email=email).exists():
                     messages.error(response, 'Invalid password or email.')
                     return render(response, 'shop/login.html', {"form": form})
                 farm = Farmer.objects.get(email=email)
-                password = hashlib.sha256(password.encode())
 
                 # Password verification
-                if farm.password != password.hexdigest():
+                if farm.checkPassword(password) is False:
                     messages.error(response, 'Invalid password or email.')
                     return render(response, 'shop/login.html', {"form": form}, )
 
+                # Session Setup
+                response.session['member_id'] = farm.email
+                response.session['farmer'] = True
             messages.success(response, 'Login Successful!')
         return redirect("/home")
     else:
         form = LoginForm()
     return render(response, 'shop/login.html', {"form": form})
+
+
+def logout(request):
+    # Delete any session data
+    try:
+        del request.session['member_id']
+    except KeyError:
+        pass
+    try:
+        del request.session['farmer']
+    except KeyError:
+        pass
+    try:
+        del request.session['customer']
+    except KeyError:
+        pass
+    messages.info(request, 'You have successfully logged out.')
+    return redirect("/home")
 
 
 def customer(response):
@@ -89,6 +124,7 @@ def customer(response):
                 form.add_error('email', "This email is already registered.")
                 return render(response, 'shop/registration/customer.html', {"form": form})
             password = hashlib.sha256(password.encode())
+
             # New Object Creation
             newCust = Customer(CU_name=name, email=email, phone=phone, address=address, password=password.hexdigest())
             newCust.save()
@@ -103,6 +139,7 @@ def farmer(response):
     if response.method == "POST":
         form = RegisterFarmerForm(response.POST)
         if form.is_valid():
+
             # Form Cleaning
             name = form.cleaned_data['farmerName']
             email = form.cleaned_data['email']
