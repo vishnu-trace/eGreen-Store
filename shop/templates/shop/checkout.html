@@ -13,20 +13,11 @@
         <h2>Step 1 - Egreen Store Express Checkout - Review Your Cart Items</h2>
         <div>
             <ul class="list-group" id="items">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    Cras justo odio
-                    <span class="badge badge-primary badge-pill">14</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    oh my god
-                    <span class="badge badge-primary badge-pill">2</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    jojo bizzare
-                    <span class="badge badge-primary badge-pill">1</span>
-                </li>
+
+
             </ul>
         </div>
+        <button class='btn btn-primary mx-2 my-2' onclick='clearCart()' id='clearCart'>Clear Cart</button>
     </div>
     <div class="col my-4">
         <h2>Step 2 - Enter Address & Other Details:</h2>
@@ -76,13 +67,9 @@
 {% endblock %}
 {% block js %}
 <script>
-if (localStorage.getItem('cart') == null) {
-    var cart = {};
-} else {
-    cart = JSON.parse(localStorage.getItem('cart'));
-
-}
+cart ={}
 console.log(cart);
+
 for (item in cart) {
     let name = cart[item][1];
     let qty = cart[item][0];
@@ -92,5 +79,28 @@ for (item in cart) {
                 </li>`
     $('#items').append(mystr);
 }
+</script>
+<script>
+
+//clearCart
+function clearCart() {
+    //cart = JSON.parse(localStorage.getItem('cart'));
+    localStorage.setItem('cart', {});
+    location.reload();
+}
+
+
+
+function updateCart(cart) {
+    var sum = 0;
+    for (var item in cart) {
+        sum = sum + cart[item][0];
+        document.getElementById('div' + item).innerHTML = "<button id='minus" + item + "' class='btn btn-primary minus'>-</button> <span id='val" + item + "''>" + cart[item][0] + "</span> <button id='plus" + item + "' class='btn btn-primary plus'> + </button>";
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    document.getElementById('cart').innerHTML = sum;
+    console.log(cart);
+}
+
 </script>
 {% endblock %}

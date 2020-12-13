@@ -1,34 +1,39 @@
 from .models import Product, Customer, Farmer
 from math import ceil
 from django.shortcuts import render, redirect
-from .forms import RegisterUserForm, RegisterFarmerForm, LoginForm
+from .forms import RegisterUserForm, RegisterFarmerForm, LoginForm, ProductRegisterForm
 from django.contrib import messages
 import hashlib
+import datetime
+from django.core.files.storage import FileSystemStorage
 
 
 # Create your views here.
 def index(request):
     loggedIn = False
-    allProds = []
-    catprods = Product.objects.values('category', 'id')
-    cats = {item['category'] for item in catprods}
-    for cat in cats:
-        prod = Product.objects.filter(category=cat)
-        n = len(prod)
-        nSlides = n // 4 + ceil((n / 4) - (n // 4))
-        allProds.append([prod, range(1, nSlides), nSlides])
+    farmer = False
+    if Product.objects.all().exists():
+        allProds = []
+        catprods = Product.objects.values('category', 'product_id')
+        cats = {item['category'] for item in catprods}
+        for cat in cats:
+            prod = Product.objects.filter(category=cat)
+            n = len(prod)
+            nSlides = n // 4 + ceil((n / 4) - (n // 4))
+            allProds.append([prod, range(1, nSlides), nSlides])
 
     # Test for session with member email
     try:
-        if Customer.objects.all().filter(email=request.session['member_id']).exists() or \
-                Farmer.objects.all().filter(email=request.session['member_id']).exists():
+        if request.session['loggedIn'] is True:
             loggedIn = True
+        if request.session['farmer'] is True:
+            farmer = True
     except AttributeError:
         pass
     except KeyError:
         pass
-    print(loggedIn)
-    params = {'allProds': allProds, 'loggedIn': loggedIn}
+    print(farmer)
+    params = {'allProds': allProds, 'loggedIn': loggedIn, 'farmer': farmer}
     return render(request, 'shop/index.html', params)
 
 
@@ -77,6 +82,7 @@ def login(response):
                 # Session Setup
                 response.session['member_id'] = farm.email
                 response.session['farmer'] = True
+                response.session['loggedIn'] = True
             messages.success(response, 'Login Successful!')
         return redirect("/home")
     else:
@@ -96,6 +102,10 @@ def logout(request):
         pass
     try:
         del request.session['customer']
+    except KeyError:
+        pass
+    try:
+        del request.session['loggedIn']
     except KeyError:
         pass
     messages.info(request, 'You have successfully logged out.')
@@ -167,6 +177,48 @@ def farmer(response):
     else:
         form = RegisterFarmerForm()
     return render(response, 'shop/registration/farmer.html', {"form": form})
+
+
+def product(response):
+    if response.method == "POST":
+        form = ProductRegisterForm(response.POST, response.FILES)
+        email = response.session['member_id']
+        if form.is_valid():
+            product_name = form.cleaned_data['product_name']
+            category = form.cleaned_data['category']
+            expiry_date = form.cleaned_data['expiry_date']
+            weight = form.cleaned_data['weight']
+            bulk_price = form.cleaned_data['bulk_price']
+            per_unit_price = form.cleaned_data['per_unit_price']
+            image = form.cleaned_data['image']
+
+            # product id is generated from string concatenation of product_name+farm.email+current-time
+            idTemp = (product_name+email+(datetime.datetime.now().strftime("%m/%d/%Y")))
+            product_id = hashlib.sha256(idTemp.encode()).hexdigest()
+
+            newProd = Product(
+                product_id=product_id,
+                expiry_date=expiry_date,
+                weight=weight,
+                bulk_price=bulk_price,
+                per_unit_price=per_unit_price,
+                product_name=product_name,
+                category=category,
+                image=image,
+                farmer=Farmer.objects.get(email=email)
+            )
+            newProd.save()
+            newProd.genFactor()
+            newProd.updateProduct(0)
+            print(newProd.factor)
+            messages.info(response, 'Your new product successfully added!')
+            redirect("/home")
+    else:
+        keys = list(response.session.keys())
+        if 'loggedIn' not in keys and response.session['farmer'] is not True:
+            return redirect("/home/")
+        form = ProductRegisterForm()
+    return render(response, 'shop/registration/product.html', {"form": form})
 
 
 def tracker(request):

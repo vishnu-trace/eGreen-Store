@@ -99,12 +99,13 @@ padding-right: 0;
 {% block js %}
 <script>
 //find out the cart items from localStorage
-if (localStorage.getItem('cart') == null) {
+ var cart = {}
+/*if (localStorage.getItem('cart') == null) {
     var cart = {};
 } else {
     cart = JSON.parse(localStorage.getItem('cart'));
     updateCart(cart);
-}
+}*/
 //if the add to cart buttn is clicked ,add/increment the item
 //$('.cart').click(function() {
 $('.divpr').on('click', 'button.cart', function() {
@@ -126,15 +127,16 @@ updatePopover(cart);
 function updatePopover(cart) {
     console.log('we are inside updatePopover');
     var popStr = "";
-    popStr = popStr + "<h5> Cart for your items in E cart </h5><div class='mx-2 my-2'>";
+    popStr = popStr + "<h5>  Items in your cart </h5><div class='mx-2 my-2'>";
     var i = 1;
     for (var item in cart) {
         popStr = popStr + "<b>" + i + "</b>. ";
-        popStr = popStr + document.getElementById('name' + item).innerHTML.slice(0, 19) + " ...Qty: " + cart[item][0] + '<br>';
+        popStr = popStr + document.getElementById('name' + item).innerHTML.slice(0, 19) + " ----->Qty: " + cart[item][0] + '<br>';
         i = i + 1;
 
     }
     popStr = popStr + "</div> "
+    popStr = popStr + "<a class='btn btn-primary mx-1 my-1' href='checkout/'>Checkout</a>"
     console.log(popStr);
     document.getElementById('popcart').setAttribute('data-content', popStr);
     $('#popcart').popover('show');
