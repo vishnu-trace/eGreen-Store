@@ -7,11 +7,28 @@ import hashlib
 import datetime
 from django.core.files.storage import FileSystemStorage
 
+def checkLogin(request):
+    loggedIn = False
+    farmer = False
+    try:
+        if request.session['loggedIn'] is True:
+            loggedIn = True
+        if request.session['farmer'] is True:
+            farmer = True
+    except AttributeError:
+        pass
+    except KeyError:
+        pass
+    if loggedIn or farmer:
+        return True
+    return False
+
 
 # Create your views here.
 def index(request):
     loggedIn = False
     farmer = False
+    allProds = None;
     if Product.objects.all().exists():
         allProds = []
         catprods = Product.objects.values('category', 'product_id')
@@ -42,6 +59,10 @@ def about(request):
 
 
 def login(response):
+    if checkLogin(response):
+        messages.info(response, 'You are already Logged In')
+        return redirect("/", messages='You are already Logged In')
+
     if response.method == "POST":
         form = LoginForm(response.POST)
         if form.is_valid():
@@ -84,7 +105,7 @@ def login(response):
                 response.session['farmer'] = True
                 response.session['loggedIn'] = True
             messages.success(response, 'Login Successful!')
-        return redirect("/home")
+        return redirect("/")
     else:
         form = LoginForm()
     return render(response, 'shop/login.html', {"form": form})
@@ -109,10 +130,14 @@ def logout(request):
     except KeyError:
         pass
     messages.info(request, 'You have successfully logged out.')
-    return redirect("/home")
+    return redirect("/")
 
 
 def customer(response):
+    if checkLogin(response):
+        messages.info(response, 'You are already Logged In')
+        return redirect("/", messages='You are already Logged In')
+
     if response.method == "POST":
         form = RegisterUserForm(response.POST)
         if form.is_valid():
@@ -139,13 +164,17 @@ def customer(response):
             newCust = Customer(CU_name=name, email=email, phone=phone, address=address, password=password.hexdigest())
             newCust.save()
         messages.info(response, 'Your Account has been Registered successfully!')
-        return redirect("/home", messages='Your Account has been Registered successfully!')
+        return redirect("/", messages='Your Account has been Registered successfully!')
     else:
         form = RegisterUserForm()
     return render(response, 'shop/registration/customer.html', {"form": form})
 
 
 def farmer(response):
+    if checkLogin(response):
+        messages.info(response, 'You are already Logged In')
+        return redirect("/", messages='You are already Logged In')
+
     if response.method == "POST":
         form = RegisterFarmerForm(response.POST)
         if form.is_valid():
@@ -172,8 +201,8 @@ def farmer(response):
             # New Object Creation
             newFarm = Farmer(SF_name=name, email=email, phone=phone, address=address, password=password.hexdigest())
             newFarm.save()
-        messages.info(response, 'Your Account has been Registered successfully!')
-        return redirect("/home")
+            messages.info(response, 'Your Account has been Registered successfully!')
+        return redirect("/")
     else:
         form = RegisterFarmerForm()
     return render(response, 'shop/registration/farmer.html', {"form": form})
@@ -212,13 +241,13 @@ def product(response):
             newProd.updateProduct(0)
             print(newProd.factor)
             messages.info(response, 'Your new product successfully added!')
-            redirect("/home")
+            redirect("/")
     else:
         keys = list(response.session.keys())
         if 'loggedIn' not in keys and response.session['farmer'] is not True:
-            return redirect("/home/")
+            return redirect("/")
         form = ProductRegisterForm()
-    return render(response, 'shop/registration/product.html', {"form": form})
+    return render(response, 'shop/registration/product.html', {"form": form, "loggedIn": True, "Farmer": True})
 
 
 def tracker(request):

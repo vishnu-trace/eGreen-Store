@@ -46,6 +46,7 @@ padding-right: 0;
         {% endfor %}
 
 {% endif %}
+{% if allProds is not None %}
 <div class="container">
     <!--Slideshow starts here -->
     {% for product, range, nSlides in allProds %}
@@ -69,7 +70,7 @@ padding-right: 0;
                                 <h5 class="card-title" id="date{{i.id}}">{{i.expiry_date}}</h5>
                                 <h6 class="card-title">Price: <span id="pricepr{{i.id}}">{{i.curr_price}}</span></h6>
                                 <h6 class="card-title">BulkPrice: <span id="bulkprice{{i.id}}">{{i.bulk_price}}</span></h6>
-                                <h6 class="card-title">PER Piece: <span id="pp{{i.id}}">{{i.per_unit_price}}</span></h6>
+                                <h6 class="card-title">PER KG: <span id="pp{{i.id}}">{{i.per_unit_price}}</span></h6>
                                 <span id="divpr{{i.id}}" class="divpr">
                                     <button id="pr{{i.id}}" class="btn btn-primary cart">Add To Cart</button>
                                 </span>
@@ -95,6 +96,11 @@ padding-right: 0;
     </div>
     {% endfor %}
 </div>
+{% else %}
+    <div class="container col-md-6 col-sm-6" style="margin-top:10em;">
+            <h4 >No products available right now. Come back soon to explore new items.</h4>
+    </div>
+{% endif %}
 {% endblock %}
 {% block js %}
 <script>
