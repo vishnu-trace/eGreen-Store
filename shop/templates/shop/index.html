@@ -72,7 +72,7 @@ padding-right: 0;
                                 <h6 class="card-title">BulkPrice: <span id="bulkprice{{i.product_id}}">{{i.bulk_price}}</span></h6>
                                 <h6 class="card-title">PER KG: <span id="pp{{i.product_id}}">{{i.per_unit_price}}</span></h6>
                                 <span id="divpr{{i.product_id}}" class="divpr">
-                                    <button id="pr{{i.product_id}}" class="btn btn-primary cart">Add To Cart</button>
+                                    <a href="/additem/{{i.product_id}}"><button id="pr{{i.product_id}}" class="btn btn-primary cart">Add To Cart</button></a>
                                 </span>
                                 <a href="/products/{{i.product_id}}"><button id="qv{{i.id}}" class="btn btn-primary cart">QuickView</button></a>
                             </div>

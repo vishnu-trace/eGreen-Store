@@ -13,5 +13,6 @@ urlpatterns = [
     path("tracker/", views.tracker, name="TrackingStatus"),
     path("search/", views.search, name="Search"),
     path("products/<slug:myid>", views.productView, name="ProductView"),
+    path("additem/<slug:pid>", views.addCartItem, name="AddItem"),
     path("checkout/", views.checkout, name="Checkout")
 ]

@@ -1,10 +1,11 @@
-from .models import Product, Customer, Farmer
+from .models import Product, Customer, Farmer, Cart
 from math import ceil
 from django.shortcuts import render, redirect
 from .forms import RegisterUserForm, RegisterFarmerForm, LoginForm, ProductRegisterForm
 from django.contrib import messages
 import hashlib
 import datetime
+import time
 from django.core.files.storage import FileSystemStorage
 
 def checkLogin(request):
@@ -23,9 +24,35 @@ def checkLogin(request):
         return True
     return False
 
-def addCartItem(request):
-   if checkLogin(request):
 
+def addCartItem(request, pid):
+    custB = False
+    try:
+        if request.session['customer'] is True:
+            custB = True
+    except KeyError:
+        pass
+    if custB is False:
+        messages.error(request, "Sign In as Customer to Add Items to Your Cart.")
+        return index(request)
+
+    if not Product.objects.all().filter(product_id=pid).exists():
+        messages.error(request, "Seems like there is some problem with this products listing. We are working on it.")
+        return render(request, "shop/index.html")
+
+    prod = Product.objects.get(product_id=pid)
+    print(prod)
+    cart = Cart(
+        Customer=Customer.objects.get(email=request.session['member_id']),
+        time=time.strftime("%H:%M:%S", time.localtime()),
+        product=Product.objects.get(product_id=pid),
+        qty=1.0,
+        price=prod.curr_price,
+    )
+    cart.save()
+    print(cart)
+    prod.updateProduct(cart.qty)
+    return render(request, "shop/index.html")
 
 
 
