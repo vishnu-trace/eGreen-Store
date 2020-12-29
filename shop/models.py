@@ -54,6 +54,8 @@ class Product(models.Model):
     def genFactor(self):
         self.factor = (self.per_unit_price - (self.bulk_price / self.weight)) / self.weight
         self.save()
+  #  def updatePrice(self):
+    #        self.curr_price =
 
 
 class Customer(models.Model):

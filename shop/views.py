@@ -23,6 +23,11 @@ def checkLogin(request):
         return True
     return False
 
+def addCartItem(request):
+   if checkLogin(request):
+
+
+
 
 # Create your views here.
 def index(request):
@@ -230,6 +235,7 @@ def product(response):
                 expiry_date=expiry_date,
                 weight=weight,
                 bulk_price=bulk_price,
+                curr_price=per_unit_price,
                 per_unit_price=per_unit_price,
                 product_name=product_name,
                 category=category,
@@ -260,7 +266,8 @@ def search(request):
 
 def productView(request, myid):
     # Fetch the product using the id
-    product = Product.objects.filter(id=myid)
+    print("View")
+    product = Product.objects.filter(product_id=myid)
     return render(request, 'shop/prodView.html', {'product': product[0]})
 
 
