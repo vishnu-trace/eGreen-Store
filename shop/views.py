@@ -45,14 +45,14 @@ def addCartItem(request, pid):
     cart = Cart(
         Customer=Customer.objects.get(email=request.session['member_id']),
         time=time.strftime("%H:%M:%S", time.localtime()),
-        product=Product.objects.get(product_id=pid),
+        Product=Product.objects.get(product_id=pid),
         qty=1.0,
         price=prod.curr_price,
     )
     cart.save()
     print(cart)
     prod.updateProduct(cart.qty)
-    return render(request, "shop/index.html")
+    return index(request)
 
 
 
