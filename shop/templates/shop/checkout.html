@@ -1,5 +1,9 @@
 {% extends 'shop/basic.html' %}
 {% block title%} Checkout - Egreen Store{% endblock %}
+{% block css %}
+    body{ background-color: #c7c7c7;}
+    .container{background-color: #fafafa}
+{% endblock %}
 {% block body %}
 {% if messages %}
         {% for message in messages %}

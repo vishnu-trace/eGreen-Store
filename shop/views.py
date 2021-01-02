@@ -248,6 +248,29 @@ def clearCart(request):
     return redirect('../checkout/')
 
 
+# For Show all product listing (Farmer Only)
+def showListings(request):
+    loggedIn = False
+    farmer = False
+
+    try:
+        if request.session['loggedIn'] is True:
+            loggedIn = True
+        if request.session['farmer'] is True:
+            farmer = True
+    except AttributeError:
+        pass
+    except KeyError:
+        pass
+    if not farmer:
+        messages.info(request, 'You are not Logged In as Farmer.')
+        redirect('/')
+
+    prods = list(Product.objects.filter(farmer=Farmer.objects.get(email=request.session['member_id'])))
+
+    return render(request, 'shop/listings.html', {'loggedIn': loggedIn, 'farmer': farmer, 'prods': prods})
+
+
 def about(request):
     return render(request, 'shop/about.html')
 

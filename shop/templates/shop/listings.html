@@ -1,0 +1,30 @@
+{% extends 'shop/basic.html' %}
+{% load extras %}
+{% block title%} Egreen Store - My Listings {% endblock %}
+{% block css %}
+    body{ background-color: #c7c7c7;}
+    .container{background-color: #fafafa}
+{% endblock %}
+{% block body %}
+<div class="container">
+        {% if prods %}
+            <div class="row" style="margin-top:2em; margin-bottom:3em;">
+                <div class="col-sm-4"><h4>Product Name</h4></div>
+                <div class="col-sm-2"><h4>Expiration Date</h4></div>
+                <div class="col-sm-2"><h4>Qty Listed</h4></div>
+            </div>
+            {% for i in prods %}
+                <div class="row">
+                    <div class="col-sm-4"><h5>{{ i.product_name }}</h5></div>
+                    <div class="col-sm-2"><h5>{{ i.expiry_date }}</h5></div>
+                    <div class="col-sm-2"><h5>{{ i.weight }}</h5></div>
+                    <div class="col-sm-2"><a href="/edititem/{{i.product_id}}"><button class="btn btn-secondary">Edit Listing</button></a></div>
+                    <div class="col-sm-2"><a href="/delitem/{{i.product_id}}"><button class="btn btn-secondary">Delete Listing</button></a></div>
+                </div>
+                <br>
+            {% endfor %}
+        {% else %}
+            <h4>No Product Listings By You. Hurry Up and Register Some.</h4>
+        {% endif %}
+</div>
+{% endblock %}
