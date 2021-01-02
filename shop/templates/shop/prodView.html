@@ -8,7 +8,7 @@
         {% endfor %}
 
 {% endif %}
-<div class="container my-4">
+<div class="container md-6" style="padding-top:5em;padding-left:15em;">
     <div class="row">
         <div class="col-md-4">
             <div class="row">
@@ -19,8 +19,8 @@
                 <button class="btn btn-primary">Add To Cart</button>
             </div>
         </div>
-        <div class="col-md-8">
-            <h5>{{product.product_name}}</h5>
+        <div class="col-md-6" style="padding-top:6em;">
+            <h4>{{product.product_name}}</h4>
             <p><b>Rs:{{product.curr_price}} </b></p>
             <p><b>Date:{{product.expiry_date}}</b></p>
             <p><b>BulkPrice:{{product.bulk_price}}</b></p>

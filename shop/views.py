@@ -6,7 +6,9 @@ from django.contrib import messages
 import hashlib
 import datetime
 import time
-from django.core.files.storage import FileSystemStorage
+
+
+
 
 def checkLogin(request):
     loggedIn = False
@@ -27,18 +29,41 @@ def checkLogin(request):
 
 def addCartItem(request, pid):
     custB = False
+    # check for user as Customer
     try:
         if request.session['customer'] is True:
             custB = True
+            print("True")
     except KeyError:
         pass
+
     if custB is False:
         messages.error(request, "Sign In as Customer to Add Items to Your Cart.")
-        return index(request)
+        return redirect("/")
 
     if not Product.objects.all().filter(product_id=pid).exists():
         messages.error(request, "Seems like there is some problem with this products listing. We are working on it.")
-        return render(request, "shop/index.html")
+        return redirect("/")
+
+    if Cart.objects.all().filter(Customer=Customer.objects.get(email=request.session['member_id']),Product=Product.objects.get(product_id=pid)).exists():
+        cart = Cart.objects.get(Customer=Customer.objects.get(email=request.session['member_id']),
+                                         Product=Product.objects.get(product_id=pid))
+        cart.qty += 1
+        cart.price = Product.objects.get(product_id=pid).curr_price
+        print(cart.qty)
+        try:
+            Product.objects.get(product_id=pid).updateProduct(1)
+            cart.price = Product.objects.get(product_id=pid).curr_price
+        except ValueError:
+            cart.qty -= 1
+            cart.save()
+            if cart.qty == 0.0:
+                cart.delete()
+            messages.error(request, "Looks like product is out of stock stay tuned for updates")
+            return redirect("/")
+            pass
+        cart.save()
+        return redirect("/")
 
     prod = Product.objects.get(product_id=pid)
     print(prod)
@@ -51,16 +76,86 @@ def addCartItem(request, pid):
     )
     cart.save()
     print(cart)
-    prod.updateProduct(cart.qty)
+    try:
+        prod.updateProduct(1)
+    except ValueError:
+        cart.qty -= 1
+        cart.save()
+        if cart.qty == 0.0:
+            cart.delete()
+        messages.error(request, "Looks like product is out of stock stay tuned for updates")
+        return redirect("/")
+        pass
+
     return index(request)
 
+
+def deleteCartItem(request, pid):
+    custB = False
+    # check for user as Customer
+    try:
+        if request.session['customer'] is True:
+            custB = True
+            print("True")
+    except KeyError:
+        pass
+
+    if custB is False:
+        messages.error(request, "Sign In as Customer to Delete Items From Your Cart.")
+        return redirect("/")
+
+    if not Product.objects.all().filter(product_id=pid).exists():
+        messages.error(request, "Seems like there is some problem with this products listing. We are working on it.")
+        return redirect("/")
+
+    if Cart.objects.all().filter(Customer=Customer.objects.get(email=request.session['member_id']), Product=Product.objects.get(product_id=pid)).exists():
+        cart = Cart.objects.get(Customer=Customer.objects.get(email=request.session['member_id']),
+                                         Product=Product.objects.get(product_id=pid))
+        cart.qty -= 1
+        print(cart.qty)
+        try:
+            Product.objects.get(product_id=pid).updateProduct(-1)
+            cart.price = Product.objects.get(product_id=pid).curr_price
+        except ValueError:
+            cart.qty -= 1
+            cart.save()
+        cart.save()
+        if cart.qty == 0.0:
+            cart.delete()
+        return redirect("/")
+
+    prod = Product.objects.get(product_id=pid)
+    print(prod)
+    cart = Cart(
+        Customer=Customer.objects.get(email=request.session['member_id']),
+        time=time.strftime("%H:%M:%S", time.localtime()),
+        Product=Product.objects.get(product_id=pid),
+        qty=1.0,
+        price=prod.curr_price,
+    )
+    cart.save()
+    print(cart)
+    try:
+        prod.updateProduct(1)
+    except ValueError:
+        cart.qty -= 1
+        cart.save()
+        if cart.qty == 0.0:
+            cart.delete()
+        messages.error(request, "Looks like product is out of stock stay tuned for updates")
+        return redirect("/")
+        pass
+
+    return index(request)
 
 
 # Create your views here.
 def index(request):
     loggedIn = False
     farmer = False
-    allProds = None;
+    customerFlag = False
+    allProds = None
+    cart = None
     if Product.objects.all().exists():
         allProds = []
         catprods = Product.objects.values('category', 'product_id')
@@ -77,13 +172,80 @@ def index(request):
             loggedIn = True
         if request.session['farmer'] is True:
             farmer = True
+
     except AttributeError:
         pass
     except KeyError:
         pass
-    print(farmer)
-    params = {'allProds': allProds, 'loggedIn': loggedIn, 'farmer': farmer}
+    try:
+        if request.session['customer'] is True:
+            customerFlag = True
+    except AttributeError:
+        pass
+    except KeyError:
+        pass
+
+    # Gathering Cart Items for given Customer
+    if customerFlag is True:
+        if Cart.objects.all().filter(Customer=Customer.objects.get(email=request.session['member_id'])).exists() is True:
+            cart = list(Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id']))
+                        .select_related('Product'))
+
+    print(cart)
+    params = {'allProds': allProds, 'loggedIn': loggedIn, 'farmer': farmer, 'cart': cart}
     return render(request, 'shop/index.html', params)
+
+
+def checkout(request):
+    if checkLogin(request) is False:
+        messages.info(request, 'You are not Logged In')
+        return redirect("/")
+    loggedIn = False
+    customerFlag = False
+    cart = None
+
+    try:
+        if request.session['customer'] is True:
+            customerFlag = True
+            loggedIn = True
+    except AttributeError:
+        pass
+    except KeyError:
+        pass
+
+    # Gathering Cart Items for given Customer
+    if customerFlag is True:
+        if Cart.objects.all().filter(
+                Customer=Customer.objects.get(email=request.session['member_id'])).exists() is True:
+            cart = list(Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id']))
+                        .select_related('Product'))
+
+    return render(request, 'shop/checkout.html', {'loggedIn': loggedIn, 'cart': cart})
+
+def clearCart(request):
+    if checkLogin(request) is False:
+        messages.info(request, 'You are not Logged In')
+        return redirect("/")
+    loggedIn = False
+    customerFlag = False
+    cart = None
+
+    try:
+        if request.session['customer'] is True:
+            customerFlag = True
+            loggedIn = True
+
+    except AttributeError:
+        pass
+    except KeyError:
+        pass
+
+    # Gathering Cart items and deleting them for given Customer
+    if customerFlag is True:
+        if Cart.objects.all().filter(
+                Customer=Customer.objects.get(email=request.session['member_id'])).exists() is True:
+            cart = Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id'])).delete()
+    return redirect('../checkout/')
 
 
 def about(request):
@@ -120,6 +282,7 @@ def login(response):
                 # Session Setup
                 response.session['member_id'] = cust.email
                 response.session['customer'] = True
+                response.session['loggedIn'] = True
             else:
                 # Farmer email Verification
                 if not Farmer.objects.all().filter(email=email).exists():
@@ -298,5 +461,3 @@ def productView(request, myid):
     return render(request, 'shop/prodView.html', {'product': product[0]})
 
 
-def checkout(request):
-    return render(request, 'shop/checkout.html')

@@ -12,17 +12,34 @@
 
     <div class="col my-4">
         <h2>Step 1 - Egreen Store Express Checkout - Review Your Cart Items</h2>
-        <div>
-            <ul class="list-group" id="items">
+        <div class="container" style="margin-top:2em;margin-bottom:2em;">
+            {% if cart %}
+                    <div class="row">
+                        <h4 class="col-sm-8">Item</h4>
+                        <h4 class="col-sm">Qty</h4>
+                        <br><br>
+                    </div>
+                {% for i in cart %}
+                    <div class="row">
+                        <h6 class="col-sm-8">{{i.Product.product_name}}</h6>
 
-
-            </ul>
+                        <h6 class="col-sm">
+                            <a href="/deleteitem/{{i.Product.product_id}}"><button  class="btn btn-primary cart">-</button></a>
+                            {{i.qty}}
+                            <a href="/additem/{{i.Product.product_id}}"><button  class="btn btn-primary cart">+</button></a>
+                        </h6>
+                    </div>
+                {% endfor %}
+                {% else %}
+                    <h4 class="col-sm-8">No items in cart.</h4>
+                {% endif %}
         </div>
-        <button class='btn btn-primary mx-2 my-2' onclick='clearCart()' id='clearCart'>Clear Cart</button>
+        <a href="../clearcart/"><button class='btn btn-primary mx-2 my-2' id='clearCart'>Clear Cart</button></a>
     </div>
     <div class="col my-4">
         <h2>Step 2 - Enter Address & Other Details:</h2>
-        <form method="post" action="/shop/checkout/">{% csrf_token %}
+        <form method="post" action="/shop/checkout/">
+            {% csrf_token %}
             <input type="hidden" name="itemsJson" id="itemsJson">
             <input type="hidden" name="amount" id="amount">
             <div class="form-row">
@@ -63,6 +80,9 @@
             </div>
             <button type="submit" class="btn btn-primary">Place Order</button>
         </form>
+        <br><br><br>
+        <h6>*Currently we support only UPI payments. The UPI payment link will be securely sent to you mail at the time of purchase.</h6>
+        <h6>*A fedex tracking ID will be sent to your mail upon confirmation of your payment.</h6>
     </div>
 </div>
 {% endblock %}
@@ -83,25 +103,6 @@ for (item in cart) {
 </script>
 <script>
 
-//clearCart
-function clearCart() {
-    //cart = JSON.parse(localStorage.getItem('cart'));
-    localStorage.setItem('cart', {});
-    location.reload();
-}
-
-
-
-function updateCart(cart) {
-    var sum = 0;
-    for (var item in cart) {
-        sum = sum + cart[item][0];
-        document.getElementById('div' + item).innerHTML = "<button id='minus" + item + "' class='btn btn-primary minus'>-</button> <span id='val" + item + "''>" + cart[item][0] + "</span> <button id='plus" + item + "' class='btn btn-primary plus'> + </button>";
-    }
-    localStorage.setItem('cart', JSON.stringify(cart));
-    document.getElementById('cart').innerHTML = sum;
-    console.log(cart);
-}
 
 </script>
 {% endblock %}

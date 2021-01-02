@@ -87,6 +87,8 @@ class Cart(models.Model):
     price = models.FloatField(default=0)
 
 
+
+
 # Order Model for once Order is placed
 class Order(models.Model):
     order_ID = models.CharField(primary_key=True, max_length=128)
