@@ -3,7 +3,7 @@
 {% block title%} Egreen Store - My Listings {% endblock %}
 {% block css %}
     body{ background-color: #c7c7c7;}
-    .container{background-color: #fafafa}
+    .container{background-color: #fafafa; padding:2em;}
 {% endblock %}
 {% block body %}
 <div class="container">
@@ -19,10 +19,14 @@
                     <div class="col-sm-2"><h5>{{ i.expiry_date }}</h5></div>
                     <div class="col-sm-2"><h5>{{ i.weight }}</h5></div>
                     <div class="col-sm-2"><a href="/edititem/{{i.product_id}}"><button class="btn btn-secondary">Edit Listing</button></a></div>
-                    <div class="col-sm-2"><a href="/delitem/{{i.product_id}}"><button class="btn btn-secondary">Delete Listing</button></a></div>
+                    <div class="col-sm-2"><a href="/deletefarmitem/{{i.product_id}}"><button class="btn btn-secondary">Delete Listing</button></a></div>
                 </div>
                 <br>
             {% endfor %}
+            <h6 style="margin-top:3em;">* Note: If it is found that the deleted listing was already booked by customers.
+                A ban of 10-30 days will be imposed for the farmer where new listings will not be allowed for given duration.
+                Repeated such behaviour will cause permanent closure of the farmer account.
+            </h6>
         {% else %}
             <h4>No Product Listings By You. Hurry Up and Register Some.</h4>
         {% endif %}

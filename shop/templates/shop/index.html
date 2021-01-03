@@ -3,7 +3,7 @@
 {% block title%} Egreen Store - Ecommerce Website{% endblock %}
 {% block css %}
 body{ background-color: #c7c7c7;}
-.container{background-color: #fafafa}
+.container{background-color: #fafafa; padding:2em;}
 .col-md-3
 {
 display: inline-block;
@@ -51,13 +51,9 @@ padding-right: 0;
 {% endif %}
 {% if allProds is not None %}
 <div class="container">
-
-
-
-
     <!--Slideshow starts here -->
     {% for product, range, nSlides in allProds %}
-    <h5 class="my-4"> {{product.0.category}}</h5>
+    <h3 class="my-4"> {{product.0.category}}</h3>
     <div class="row">
         <div id="demo{{forloop.counter}}" class="col carousel slide my-3" data-ride="carousel">
             <ul class="carousel-indicators">

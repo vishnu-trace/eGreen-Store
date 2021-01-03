@@ -1,13 +1,11 @@
 from .models import Product, Customer, Farmer, Cart
 from math import ceil
 from django.shortcuts import render, redirect
-from .forms import RegisterUserForm, RegisterFarmerForm, LoginForm, ProductRegisterForm
+from .forms import RegisterUserForm, RegisterFarmerForm, LoginForm, ProductRegisterForm, ProductEditForm
 from django.contrib import messages
 import hashlib
 import datetime
 import time
-
-
 
 
 def checkLogin(request):
@@ -45,9 +43,10 @@ def addCartItem(request, pid):
         messages.error(request, "Seems like there is some problem with this products listing. We are working on it.")
         return redirect("/")
 
-    if Cart.objects.all().filter(Customer=Customer.objects.get(email=request.session['member_id']),Product=Product.objects.get(product_id=pid)).exists():
+    if Cart.objects.all().filter(Customer=Customer.objects.get(email=request.session['member_id']),
+                                 Product=Product.objects.get(product_id=pid)).exists():
         cart = Cart.objects.get(Customer=Customer.objects.get(email=request.session['member_id']),
-                                         Product=Product.objects.get(product_id=pid))
+                                Product=Product.objects.get(product_id=pid))
         cart.qty += 1
         cart.price = Product.objects.get(product_id=pid).curr_price
         print(cart.qty)
@@ -108,9 +107,10 @@ def deleteCartItem(request, pid):
         messages.error(request, "Seems like there is some problem with this products listing. We are working on it.")
         return redirect("/")
 
-    if Cart.objects.all().filter(Customer=Customer.objects.get(email=request.session['member_id']), Product=Product.objects.get(product_id=pid)).exists():
+    if Cart.objects.all().filter(Customer=Customer.objects.get(email=request.session['member_id']),
+                                 Product=Product.objects.get(product_id=pid)).exists():
         cart = Cart.objects.get(Customer=Customer.objects.get(email=request.session['member_id']),
-                                         Product=Product.objects.get(product_id=pid))
+                                Product=Product.objects.get(product_id=pid))
         cart.qty -= 1
         print(cart.qty)
         try:
@@ -148,6 +148,78 @@ def deleteCartItem(request, pid):
 
     return index(request)
 
+
+# Edit Item listing for listings.html.
+def editItem(response, pid):
+    keys = list(response.session.keys())
+    try:
+        if 'loggedIn' not in keys and response.session['farmer'] is not True:
+            return redirect("/")
+    except KeyError:
+        pass
+    except ValueError:
+        pass
+    if response.method == "POST":
+        form = ProductEditForm(response.POST, response.FILES)
+        if form.is_valid():
+            expiry_date = form.cleaned_data['expiry_date']
+            weight = form.cleaned_data['weight']
+            bulk_price = form.cleaned_data['bulk_price']
+            per_unit_price = form.cleaned_data['per_unit_price']
+            image = form.cleaned_data['image']
+
+            Prod = Product.objects.get(product_id=pid)
+            Prod.weight = weight
+            Prod.bulk_price = bulk_price
+            Prod.per_unit_price = per_unit_price
+            Prod.image = image
+            Prod.expiry_date = expiry_date
+            Prod.save()
+            Prod.genFactor()
+            Prod.updateProduct(0)
+            print(Prod.factor)
+            messages.info(response, 'Your product listing has been successfully changed.')
+            redirect("/")
+    elif response.method == "GET":
+        Prod = None
+        if Product.objects.filter(product_id=pid).exists():
+            Prod = Product.objects.get(product_id=pid)
+        else:
+            messages.error(response, 'Product ID not valid.')
+            redirect("/")
+        form = ProductEditForm(initial={
+            'product_name': Prod.product_name,
+            'expiry_date': Prod.expiry_date,
+            'per_unit_price': Prod.per_unit_price,
+            'image': Prod.image,
+            'bulk_price': Prod.bulk_price,
+            'weight': Prod.weight,
+            'category': Prod.category
+        })
+    else:
+        redirect("/")
+    return render(response, 'shop/misc/edititem.html', {"form": form, "loggedIn": True, "Farmer": True})
+
+
+# Delete Item listing for listings.html.
+def deleteItem(request, pid):
+    keys = list(request.session.keys())
+    try:
+        if 'loggedIn' not in keys and request.session['farmer'] is not True:
+            return redirect("/")
+    except KeyError:
+        pass
+    except ValueError:
+        pass
+    if Product.objects.filter(product_id=pid).exists() and Product.objects.filter(farmer=Farmer.objects
+            .get(email=request.session['member_id'])).exists():
+        Product.objects.filter(product_id=pid).delete()
+    else:
+        messages.error(request, 'Product ID not valid.')
+        redirect("/")
+    messages.info(request,"You will not be able to make new listings for next 10-30 days."
+                  " Exact ban duration will be posted by registered mail.")
+    return redirect("/")
 
 # Create your views here.
 def index(request):
@@ -187,7 +259,8 @@ def index(request):
 
     # Gathering Cart Items for given Customer
     if customerFlag is True:
-        if Cart.objects.all().filter(Customer=Customer.objects.get(email=request.session['member_id'])).exists() is True:
+        if Cart.objects.all().filter(
+                Customer=Customer.objects.get(email=request.session['member_id'])).exists() is True:
             cart = list(Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id']))
                         .select_related('Product'))
 
@@ -221,6 +294,7 @@ def checkout(request):
                         .select_related('Product'))
 
     return render(request, 'shop/checkout.html', {'loggedIn': loggedIn, 'cart': cart})
+
 
 def clearCart(request):
     if checkLogin(request) is False:
@@ -440,7 +514,7 @@ def product(response):
             image = form.cleaned_data['image']
 
             # product id is generated from string concatenation of product_name+farm.email+current-time
-            idTemp = (product_name+email+(datetime.datetime.now().strftime("%m/%d/%Y")))
+            idTemp = (product_name + email + (datetime.datetime.now().strftime("%m/%d/%Y")))
             product_id = hashlib.sha256(idTemp.encode()).hexdigest()
 
             newProd = Product(
@@ -463,8 +537,13 @@ def product(response):
             redirect("/")
     else:
         keys = list(response.session.keys())
-        if 'loggedIn' not in keys and response.session['farmer'] is not True:
-            return redirect("/")
+        try:
+            if 'loggedIn' not in keys and response.session['farmer'] is not True:
+                return redirect("/")
+        except KeyError:
+            pass
+        except ValueError:
+            pass
         form = ProductRegisterForm()
     return render(response, 'shop/registration/product.html', {"form": form, "loggedIn": True, "Farmer": True})
 
@@ -482,5 +561,3 @@ def productView(request, myid):
     print("View")
     product = Product.objects.filter(product_id=myid)
     return render(request, 'shop/prodView.html', {'product': product[0]})
-
-

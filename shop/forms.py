@@ -45,3 +45,24 @@ class ProductRegisterForm(forms.Form):
     bulk_price = forms.FloatField(label='Bulk Price', required=True)
     per_unit_price = forms.FloatField(label='Per Kg Price', required=True)
     image = forms.ImageField(required=False)
+
+
+class ProductEditForm(forms.Form):
+    product_name = forms.CharField(label='Name of The Product', max_length=32, required=True)
+    category = forms.CharField(label='Category of The Product', max_length=64, required=True)
+    expiry_date = forms.DateField(
+        input_formats=['%d/%m/%Y'],
+        required=True,
+        widget=DatePicker(
+            options={
+                'minDate': datetime.datetime.now().strftime("%m/%d/%Y"),
+                'format': 'DD/MM/YYYY',
+            },
+        ),
+        initial=datetime.datetime.now().strftime("%m/%d/%Y"),
+    )
+    weight = forms.FloatField(label='Weight', required=True)
+    bulk_price = forms.FloatField(label='Bulk Price', required=True)
+    per_unit_price = forms.FloatField(label='Per Kg Price', required=True)
+    image = forms.ImageField(required=False)
+

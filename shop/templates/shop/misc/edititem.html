@@ -1,9 +1,9 @@
 {% extends 'shop/basic.html' %}
 {% load widget_tweaks %}
-{% block title%} Register - Product | Egreen Store{% endblock %}
+{% block title%} Edit Item Listing | Egreen Store{% endblock %}
 {% block css %}
     body{ background-color: #c7c7c7;}
-    .container{background-color: #fafafa; padding:2em;}
+    .container{background-color: #fafafa}
 {% endblock %}
 {% block body %}
 {% if messages %}
@@ -14,9 +14,9 @@
 
 {% endif %}
 
-<div class="container col-md-4" style="margin-top: 3em; margin-bottom: 5em;">
-<h2 class="cold-md-6" style="margin-bottom: 1em;">Product Registration Form</h2>
-<form action="../../registration/product/" method="post" enctype="multipart/form-data" >
+<div class="container col-md-4" style="margin-top: 3em; margin-bottom: 5em; padding:2em;">
+<h2 class="cold-md-6" style="margin-bottom: 1em;">Product Editing Form</h2>
+<form action="{{ request.path }}" method="post" enctype="multipart/form-data" >
     {% csrf_token %}
     <!--for loop to print form elements-->
     {% for field in form %}
