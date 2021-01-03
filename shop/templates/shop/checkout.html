@@ -41,7 +41,7 @@
         <a href="../clearcart/"><button class='btn btn-primary mx-2 my-2' id='clearCart'>Clear Cart</button></a>
     </div>
     <div class="col my-4">
-        <h2>Step 2 - Enter Address & Other Details:</h2>
+        <h2>Step 2 - Enter Shipping Address & Other Details:</h2>
         <form method="post" action="/shop/checkout/">
             {% csrf_token %}
             <input type="hidden" name="itemsJson" id="itemsJson">
@@ -82,7 +82,8 @@
                 <label for="inputZip">Phone Number</label>
                 <input type="tel" class="form-control" id="phone" name="phone">
             </div>
-            <button type="submit" class="btn btn-primary">Place Order</button>
+            <button type="submit" class="btn btn-primary">Buy Now</button>
+            <button type="submit" class="btn btn-primary">Book Now and Pay Later!</button>
         </form>
         <br><br><br>
         <h6>*Currently we support only UPI payments. The UPI payment link will be securely sent to you mail at the time of purchase.</h6>
