@@ -19,6 +19,7 @@
     <style>
 {% block css %}
 .modal{
+ overflow-y: scroll;
  width: 100%;
  height:100%;
  background-color: rgba(0,0,0,0.5); /* make it half transparent */
@@ -29,23 +30,7 @@
  justify-content: center; /*center horizontally*/
  align-items: center ; /* center vertically */
 }
-.modal-content{
- width:600px;
- height:300px;
- background-color: white;
- border:none;
- border-radius: 15px;
- padding:15px;
- position: relative;
- }
-.close{
- position: absolute;
- top:5px;
- right: 14px;
- font-size:25px;
- transform: rotate(45deg); /* will make it look like x */
- cursor: pointer;
- }
+
 {% endblock %}
     </style>
 
@@ -59,44 +44,8 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="/">Egreen Store</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="/about">About Us</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="https://www.fedex.com/en-in/home.html">Tracker</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="https://www.healthline.com/health/best-healthy-living-blogs#1">Blog</a>
-                </li>
-                {% if farmer%}
-                <li class="nav-item active">
-                    <a class="nav-link" href="/registration/product">Add New Product to Listing</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="/showlistings">Show All Product Listings</a>
-                </li>
-                {% endif %}
-            </ul>
-            <form method='get' action='/shop/search/' class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="search" id="search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
-            <button type="button" class="btn btn-secondary mx-2" data-toggle="modal" data-target="#cartModal">
-                Cart(<span id="cart">{{cart|length}}</span>)
-            </button>
-
-            <!-- Modal -->
-            <div class="modal fade" id="cartModal" data-backdrop="static" tabindex="-1" aria-labelledby="Cart" aria-hidden="true">
+ <!-- Modal -->
+            <div class="modal fade" id="cartModal" aria-labelledby="Cart" aria-hidden="true">
                 <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -133,6 +82,43 @@
             </div>
             </div>
             </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/">Egreen Store</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/about">About Us</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="https://www.fedex.com/en-in/home.html">Tracker</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="https://www.healthline.com/health/best-healthy-living-blogs#1">Blog</a>
+                </li>
+                {% if farmer%}
+                <li class="nav-item active">
+                    <a class="nav-link" href="/registration/product">Add New Product to Listing</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/showlistings">Show All Product Listings</a>
+                </li>
+                {% endif %}
+            </ul>
+            <form method='get' action='/shop/search/' class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="search" id="search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+            <button type="button" class="btn btn-secondary mx-2" data-toggle="modal" data-target="#cartModal">
+                Cart(<span id="cart">{{cart|length}}</span>)
+            </button>
+
+
 
             {% if  loggedIn %}
                 <a class="nav-link" href="/logout" style="colour: black;">
