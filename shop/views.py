@@ -318,7 +318,12 @@ def clearCart(request):
     if customerFlag is True:
         if Cart.objects.all().filter(
                 Customer=Customer.objects.get(email=request.session['member_id'])).exists() is True:
-            cart = Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id'])).delete()
+            cart = Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id']))
+            for i in cart:
+                Prod = Product.objects.get(product_id=i.Product.product_id)
+                Prod.updateProduct(-1*i.qty)
+                Prod.save()
+            Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id'])).delete()
     return redirect('../checkout/')
 
 
