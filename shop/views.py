@@ -1,4 +1,4 @@
-from .models import Product, Customer, Farmer, Cart
+from .models import Product, Customer, Farmer, Cart, Order, OrderContains
 from math import ceil
 from django.shortcuts import render, redirect
 from .forms import RegisterUserForm, RegisterFarmerForm, LoginForm, ProductRegisterForm, ProductEditForm
@@ -276,6 +276,7 @@ def checkout(request):
     loggedIn = False
     customerFlag = False
     cart = None
+    total = 0.0
 
     try:
         if request.session['customer'] is True:
@@ -293,7 +294,72 @@ def checkout(request):
             cart = list(Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id']))
                         .select_related('Product'))
 
-    return render(request, 'shop/checkout.html', {'loggedIn': loggedIn, 'cart': cart})
+        if cart is not None:
+            for c in cart:
+                total += c.Product.curr_price * c.qty
+
+    return render(request, 'shop/checkout.html', {'loggedIn': loggedIn, 'cart': cart, 'total': total})
+
+# used to place order
+def placeOrder(request):
+    if checkLogin(request) is False:
+        messages.info(request, 'You are not Logged In')
+        return redirect("/")
+    loggedIn = False
+    customerFlag = False
+    cart = None
+    email = None
+    total = 0.0
+    newOrder = None
+
+    try:
+        if request.session['customer'] is True:
+            customerFlag = True
+            loggedIn = True
+
+    except AttributeError:
+        pass
+    except KeyError:
+        pass
+
+        # Gathering Cart items and deleting them for given Customer
+    if customerFlag is True:
+        if Cart.objects.all().filter(
+                Customer=Customer.objects.get(email=request.session['member_id'])).exists() is True:
+            cart = list(Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id']))
+                        .select_related('Product'))
+            email = request.session['member_id']
+
+        if cart is not None:
+            for c in cart:
+                total += c.Product.curr_price * c.qty
+
+            # order id is generated from string concatenation of product_name+farm.email+current-time
+            idTemp = (email + (datetime.datetime.now().strftime("%m/%d/%Y")))
+            order_id = hashlib.sha256(idTemp.encode()).hexdigest()
+            date = datetime.datetime.now().strftime("%m/%d/%Y")
+            newOrder = Order(
+                order_ID=order_id,
+                Customer=Customer.objects.get(email=email),
+                Date=date,
+                Bill_amount=total
+            )
+            newOrder.save()
+            print(newOrder)
+
+            for c in cart:
+                ordcnt = OrderContains(
+                    Order=newOrder,
+                    Product=Product.objects.get(product_id=c.Product.product_id),
+                    date=date,
+                    qty=c.qty,
+                    price=c.price
+                )
+                ordcnt.save()
+            Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id'])).delete()
+    return render(request, 'shop/ordersummary.html', {'loggedIn': loggedIn, 'total': total, 'order': newOrder})
+
+
 
 
 def clearCart(request):

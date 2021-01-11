@@ -33,8 +33,16 @@ nav {opacity:0.88;}
                             {{i.qty}}
                             <a href="/additem/{{i.Product.product_id}}"><button  class="btn btn-primary cart">+</button></a>
                         </h6>
+
+
                     </div>
                 {% endfor %}
+                <br><br>
+                <div class="row">
+
+                        <h5 class="col-sm-8">Total </h5>
+                        <h5 class="col-sm">{{total}}</h5>
+                </div>
                 {% else %}
                     <h4 class="col-sm-8">No items in cart.</h4>
                 {% endif %}
@@ -83,10 +91,11 @@ nav {opacity:0.88;}
                 <label for="inputZip">Phone Number</label>
                 <input type="tel" class="form-control" id="phone" name="phone">
             </div>
-            <button type="submit" class="btn btn-primary">Buy Now</button>
             <button type="submit" class="btn btn-primary">Book Now and Pay Later!</button>
         </form>
+         <a href="../placeorder/"><button class="btn btn-primary">Buy Now</button></a>
         <br><br><br>
+        <h5>*Leave the address form empty to use account registered address.</h5><br>
         <h6>*Currently we support only UPI payments. The UPI payment link will be securely sent to you mail at the time of purchase.</h6>
         <h6>*A fedex tracking ID will be sent to your mail upon confirmation of your payment.</h6>
     </div>

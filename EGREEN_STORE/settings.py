@@ -80,8 +80,11 @@ WSGI_APPLICATION = 'EGREEN_STORE.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'USER': 'root',
+        'NAME': 'mysql',
+        'HOST': 'localhost',
+        'PORT': '3306'
     }
 }
 
