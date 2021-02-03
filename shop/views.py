@@ -1,7 +1,7 @@
 from .models import Product, Customer, Farmer, Cart, Order, OrderContains
 from math import ceil
 from django.shortcuts import render, redirect
-from .forms import RegisterUserForm, RegisterFarmerForm, LoginForm, ProductRegisterForm, ProductEditForm
+from .forms import RegisterUserForm, RegisterFarmerForm, LoginForm, ProductRegisterForm, ProductEditForm, SearchForm
 from django.contrib import messages
 import hashlib
 import datetime
@@ -217,9 +217,10 @@ def deleteItem(request, pid):
     else:
         messages.error(request, 'Product ID not valid.')
         redirect("/")
-    messages.info(request,"You will not be able to make new listings for next 10-30 days."
+    messages.info(request, "You will not be able to make new listings for next 10-30 days."
                   " Exact ban duration will be posted by registered mail.")
     return redirect("/")
+
 
 # Create your views here.
 def index(request):
@@ -264,8 +265,9 @@ def index(request):
             cart = list(Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id']))
                         .select_related('Product'))
 
-    print(cart)
-    params = {'allProds': allProds, 'loggedIn': loggedIn, 'farmer': farmer, 'cart': cart}
+    form = SearchForm()
+
+    params = {'allProds': allProds, 'loggedIn': loggedIn, 'farmer': farmer, 'cart': cart, 'srcForm': form}
     return render(request, 'shop/index.html', params)
 
 
@@ -623,8 +625,53 @@ def tracker(request):
     return render(request, 'shop/tracker.html')
 
 
-def search(request):
-    return render(request, 'shop/search.html')
+def search(request, srcstr):
+    if request.method == "POST":
+        form = SearchForm(request.POST)
+        srcstr = form.data['searchText']
+        loggedIn = False
+        farmer = False
+        customerFlag = False
+        searchT = None
+        cart = None
+        total = 0.0
+
+        # Test for session with member email
+        try:
+            if request.session['loggedIn'] is True:
+                loggedIn = True
+            if request.session['farmer'] is True:
+                farmer = True
+
+        except AttributeError:
+            pass
+        except KeyError:
+            pass
+        try:
+            if request.session['customer'] is True:
+                customerFlag = True
+        except AttributeError:
+            pass
+        except KeyError:
+            pass
+
+        searchT = list(Product.objects.filter(product_name__contains=srcstr))
+        if not searchT:
+            searchT = None
+
+        # Gathering Cart Items for given Customer
+        if customerFlag is True:
+            if Cart.objects.all().filter(
+                    Customer=Customer.objects.get(email=request.session['member_id'])).exists() is True:
+                cart = list(Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id']))
+                            .select_related('Product'))
+
+            if cart is not None:
+                for c in cart:
+                    total += c.Product.curr_price * c.qty
+        form = SearchForm()
+
+    return render(request, 'shop/search.html', {'farmer': farmer, 'cart': cart, 'search': searchT, 'loggedIn': loggedIn, 'total':total, 'srcForm': form})
 
 
 def productView(request, myid):
@@ -632,3 +679,4 @@ def productView(request, myid):
     print("View")
     product = Product.objects.filter(product_id=myid)
     return render(request, 'shop/prodView.html', {'product': product[0]})
+

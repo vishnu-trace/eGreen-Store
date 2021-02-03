@@ -41,7 +41,7 @@ nav {opacity:0.88;}
                 <div class="row">
 
                         <h5 class="col-sm-8">Total </h5>
-                        <h5 class="col-sm">{{total}}</h5>
+                        <h5 class="col-sm">{{total|floatformat:2}}</h5>
                 </div>
                 {% else %}
                     <h4 class="col-sm-8">No items in cart.</h4>
@@ -91,8 +91,9 @@ nav {opacity:0.88;}
                 <label for="inputZip">Phone Number</label>
                 <input type="tel" class="form-control" id="phone" name="phone">
             </div>
-            <button type="submit" class="btn btn-primary">Book Now and Pay Later!</button>
+
         </form>
+        <button type="submit" class="btn btn-primary">Book Now and Pay Later!</button>
          <a href="../placeorder/"><button class="btn btn-primary">Buy Now</button></a>
         <br><br><br>
         <h5>*Leave the address form empty to use account registered address.</h5><br>

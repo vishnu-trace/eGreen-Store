@@ -71,15 +71,18 @@ padding-right: 0;
                             <img src='/media/{{i.image}}' class="card-img-top" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title" id="namepr{{i.product_id}}">{{i.product_name}}</h5>
-                                <h6 class="card-title">Current Price: <span id="pricepr{{i.product_id}}">{{i.curr_price}}</span></h6>
-                                <h6 class="card-title">BulkPrice: <span id="bulkprice{{i.product_id}}">{{i.bulk_price}}</span></h6>
-                                <h6 class="card-title">PER KG: <span id="pp{{i.product_id}}">{{i.per_unit_price}}</span></h6>
+                                <h6 class="card-title">Current Price: <span id="pricepr{{i.product_id}}">{{i.curr_price|floatformat:2}}</span></h6>
+                                <h6 class="card-title">BulkPrice: <span id="bulkprice{{i.product_id}}">{{i.bulk_price|floatformat:2}}</span></h6>
+                                <h6 class="card-title">Available Weight:  <span id="wght{{i.product_id}}">{{i.weight}}</span></h6>
+                                <h6 class="card-title">PER KG: <span id="pp{{i.product_id}}">{{i.per_unit_price|floatformat:2}}</span></h6>
+                                {% if not farmer %}
                                 {% if cart|cartProductSearch:i.product_id %}
                                     <a href="/deleteitem/{{i.product_id}}"><button  class="btn btn-primary cart">-</button></a>
                                     <span>{{ cart|getProductQty:i.product_id }}</span>
                                     <a href="/additem/{{i.product_id}}"><button  class="btn btn-primary cart">+</button></a>
                                 {% else %}
                                     <a href="/additem/{{i.product_id}}"><button id="pr{{i.product_id}}" class="btn btn-primary cart">Add To Cart</button></a>
+                                {% endif %}
                                 {% endif %}
 
                             </div>

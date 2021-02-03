@@ -3,6 +3,10 @@ import datetime
 from tempus_dominus.widgets import DatePicker
 
 
+class SearchForm(forms.Form):
+    searchText = forms.CharField(label='Search', max_length=64, required=False)
+
+
 class RegisterUserForm(forms.Form):
     customerName = forms.CharField(label='Name', max_length=32, required=True)
     email = forms.EmailField(label='Email', max_length=64, required=True)

@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 
@@ -32,6 +33,7 @@
 }
 
 {% endblock %}
+{% load widget_tweaks %}
     </style>
 
      <!-- Font Awesome -->
@@ -110,9 +112,12 @@
                 </li>
                 {% endif %}
             </ul>
-            <form method='get' action='/shop/search/' class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="search" id="search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            <form method='post' action='../../search/123' class="form-inline my-2 my-lg-0">
+                 {% csrf_token %}
+                  {% for field in srcForm %}
+                 {% render_field field class="form-control" %}
+                 {% endfor %}
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit" style="margin-left:1em" >Search</button>
             </form>
             <button type="button" class="btn btn-secondary mx-2" data-toggle="modal" data-target="#cartModal">
                 Cart(<span id="cart">{{cart|length}}</span>)
