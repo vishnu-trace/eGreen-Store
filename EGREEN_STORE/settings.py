@@ -82,7 +82,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'USER': 'root',
-        'NAME': 'mysql',
+        'NAME': 'egreenStore',
         'HOST': 'localhost',
         'PORT': '3306'
     }
