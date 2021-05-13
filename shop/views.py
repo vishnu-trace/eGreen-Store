@@ -473,22 +473,10 @@ def login(response):
 
 def logout(request):
     # Delete any session data
-    try:
-        del request.session['member_id']
-    except KeyError:
-        pass
-    try:
-        del request.session['farmer']
-    except KeyError:
-        pass
-    try:
-        del request.session['customer']
-    except KeyError:
-        pass
-    try:
-        del request.session['loggedIn']
-    except KeyError:
-        pass
+    request.session.pop('member_id', 'Success')
+    request.session.pop('farmer', 'Success')
+    request.session.pop('customer', 'Success')
+    request.session.pop('loggedIn', 'Success')
     messages.info(request, 'You have successfully logged out.')
     return redirect("/")
 
