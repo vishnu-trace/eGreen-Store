@@ -93,6 +93,8 @@ class Order(models.Model):
     Customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     Date = models.CharField(max_length=24)
     Bill_amount = models.FloatField(default=0.0)
+    Status = models.CharField(default='Pending')
+    Due = models.FloatField
 
     def __str__(self):
         return self.order_ID

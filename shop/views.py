@@ -302,6 +302,7 @@ def checkout(request):
 
     return render(request, 'shop/checkout.html', {'loggedIn': loggedIn, 'cart': cart, 'total': total})
 
+
 # used to place order
 def placeOrder(request):
     if checkLogin(request) is False:
@@ -314,15 +315,9 @@ def placeOrder(request):
     total = 0.0
     newOrder = None
 
-    try:
-        if request.session['customer'] is True:
-            customerFlag = True
-            loggedIn = True
-
-    except AttributeError:
-        pass
-    except KeyError:
-        pass
+    if request.session.get('customer', False) is True:
+        customerFlag = True
+        loggedIn = True
 
         # Gathering Cart items and deleting them for given Customer
     if customerFlag is True:
@@ -344,7 +339,9 @@ def placeOrder(request):
                 order_ID=order_id,
                 Customer=Customer.objects.get(email=email),
                 Date=date,
-                Bill_amount=total
+                Bill_amount=total,
+                Status='Completed',
+                Due=0.0
             )
             newOrder.save()
             print(newOrder)
@@ -360,8 +357,6 @@ def placeOrder(request):
                 ordcnt.save()
             Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id'])).delete()
     return render(request, 'shop/ordersummary.html', {'loggedIn': loggedIn, 'total': total, 'order': newOrder})
-
-
 
 
 def clearCart(request):
