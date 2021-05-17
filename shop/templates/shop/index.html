@@ -69,17 +69,17 @@ padding-right: 0;
                     <div class="col-xs-3 col-sm-3 col-md-3">
                         <div class="card align-items-center" style="width: 18rem;">
                             <img src='/media/{{i.image}}' class="card-img-top" alt="...">
-                            <div class="card-body">
+                            <div class="card-body" id ="card_{{i.product_id}}">
                                 <h5 class="card-title" id="namepr{{i.product_id}}">{{i.product_name}}</h5>
-                                <h6 class="card-title">Current Price: <span id="pricepr{{i.product_id}}">{{i.curr_price|floatformat:2}}</span></h6>
-                                <h6 class="card-title">BulkPrice: <span id="bulkprice{{i.product_id}}">{{i.bulk_price|floatformat:2}}</span></h6>
-                                <h6 class="card-title">Available Weight:  <span id="wght{{i.product_id}}">{{i.weight}}</span></h6>
-                                <h6 class="card-title">PER KG: <span id="pp{{i.product_id}}">{{i.per_unit_price|floatformat:2}}</span></h6>
+                                <h6 class="card-title">Current Price: <span id="pricepr_{{i.product_id}}">{{i.curr_price|floatformat:2}}</span></h6>
+                                <h6 class="card-title">BulkPrice: <span id="bulkprice_{{i.product_id}}">{{i.bulk_price|floatformat:2}}</span></h6>
+                                <h6 class="card-title">Available Weight:  <span id="wght_{{i.product_id}}">{{i.weight}}</span></h6>
+                                <h6 class="card-title">PER KG: <span id="pp_{{i.product_id}}">{{i.per_unit_price|floatformat:2}}</span></h6>
                                 {% if not farmer %}
                                 {% if cart|cartProductSearch:i.product_id %}
                                     <button id="minusButton_{{i.product_id}}" class="minusItemButton btn btn-primary cart" data-pid="{{i.product_id}}" >-</button>
-                                    <span>{{ cart|getProductQty:i.product_id }}</span>
-                                    <button id="plusButton_{{i.product_id}}" class="plusItemButton btn btn-primary cart" data-pid="{{i.product_id}}">+</button>
+                                    <span id = 'qtySpan_{{i.product_id}}'>{{ cart|getProductQty:i.product_id }}</span>
+                                    <button id="plusButton_{{i.product_id}}" class="addItemButton btn btn-primary cart" data-pid="{{i.product_id}}">+</button>
                                 {% else %}
                                     <button id="addButton_{{i.product_id}}" class="addItemButton btn btn-primary cart" data-pid="{{i.product_id}}">Add To Cart</button>
                                 {% endif %}
@@ -112,44 +112,6 @@ padding-right: 0;
     </div>
 {% endif %}
 
-<script type="text/javascript">
-    $('.addItemButton').click(function(){
-    var pid;
-    pid = $(this).attr("data-pid");
-    $.ajax(
-    {
-        type:"GET",
-        url: "/additem",
-        data:{
-                 pid: pid
-        },
-        success: function( data )
-        {
-            cart = data;
-            alert(cart)
-            //$( '#message' ).text(data);
-        }
-     })
-});
-        $('.minusItemButton').click(function(){
-    var pid;
-    pid = $(this).attr("data-pid");
-    $.ajax(
-    {
-        type:"GET",
-        url: "/deleteitem",
-        data:{
-                 pid: pid
-        },
-        success: function( data )
-        {
-            cart = data;
-            alert(cart)
-            //$( '#message' ).text(data);
-        }
-     })
-});
-</script>
 
 {% endblock %}
 

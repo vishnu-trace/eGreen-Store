@@ -7,6 +7,8 @@ from django.contrib import messages
 import hashlib
 import datetime
 import time
+import json
+import jsonpickle
 
 
 def checkLogin(request):
@@ -31,6 +33,7 @@ def addCartItem(request):
         return HttpResponse("Request method is not a GET")
 
     custB = False
+    context = {}
     # check for user as Customer
     try:
         if request.session['customer'] is True:
@@ -46,8 +49,9 @@ def addCartItem(request):
     pid = request.GET['pid']
 
     if not Product.objects.all().filter(product_id=pid).exists():
+        context['message'] = "Seems like there is some problem with this products listing. We are working on it."
         messages.error(request, "Seems like there is some problem with this products listing. We are working on it.")
-        return redirect("/")
+        return HttpResponse(json.dumps(context), content_type='application/json')
 
     if Cart.objects.all().filter(Customer=Customer.objects.get(email=request.session['member_id']),
                                  Product=Product.objects.get(product_id=pid)).exists():
@@ -64,16 +68,18 @@ def addCartItem(request):
             cart.save()
             if cart.qty == 0.0:
                 cart.delete()
-            messages.error(request, "Looks like product is out of stock stay tuned for updates")
-            return redirect("/")
+            context['message'] = "Looks like product is out of stock stay tuned for updates"
+            context['status'] = "Error"
+            return HttpResponse(json.dumps(context), content_type='application/json')
             pass
         cart.save()
-        cart = list(Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id']))
-                    .select_related('Product'))
-        return HttpResponse(cart)
+        context['status'] = "Success"
+        context['cart_price'] = cart.Product.curr_price
+        context['cart_weight'] = cart.Product.weight
+        context['cart_qty'] = cart.qty
+        return HttpResponse(json.dumps(context), content_type='application/json')
 
     prod = Product.objects.get(product_id=pid)
-    print(prod)
     cart = Cart(
         Customer=Customer.objects.get(email=request.session['member_id']),
         time=time.strftime("%H:%M:%S", time.localtime()),
@@ -82,7 +88,6 @@ def addCartItem(request):
         price=prod.curr_price,
     )
     cart.save()
-    print(cart)
     try:
         prod.updateProduct(1)
     except ValueError:
@@ -90,19 +95,22 @@ def addCartItem(request):
         cart.save()
         if cart.qty == 0.0:
             cart.delete()
-        messages.error(request, "Looks like product is out of stock stay tuned for updates")
-        return redirect("/")
+        context['message'] = "Looks like product is out of stock stay tuned for updates"
+        context['status'] = "Error"
+        return HttpResponse(json.dumps(context), content_type='application/json')
         pass
-    cart = list(Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id']))
-                .select_related('Product'))
-    print(cart)
-    return HttpResponse(cart)
+    context['status'] = "Success"
+    context['cart_price'] = cart.Product.curr_price
+    context['cart_weight'] = cart.Product.weight
+    context['cart_qty'] = cart.qty
+    return HttpResponse(json.dumps(context), content_type='application/json')
 
 
 def deleteCartItem(request):
     if request.method != 'GET':
         return HttpResponse("Request method is not a GET")
 
+    context = {}
     custB = False
     # check for user as Customer
     try:
@@ -113,14 +121,16 @@ def deleteCartItem(request):
         pass
 
     if custB is False:
-        messages.error(request, "Sign In as Customer to Delete Items From Your Cart.")
-        return redirect("/")
+        context['message'] = "Sign In as Customer to Delete Items From Your Cart."
+        context['status'] = "Error"
+        return HttpResponse(json.dumps(context), content_type='application/json')
 
     pid = request.GET['pid']
 
     if not Product.objects.all().filter(product_id=pid).exists():
-        messages.error(request, "Seems like there is some problem with this products listing. We are working on it.")
-        return redirect("/")
+        context['message'] = "Seems like there is some problem with this products listing. We are working on it."
+        context['status'] = "Error"
+        return HttpResponse(json.dumps(context), content_type='application/json')
 
     if Cart.objects.all().filter(Customer=Customer.objects.get(email=request.session['member_id']),
                                  Product=Product.objects.get(product_id=pid)).exists():
@@ -135,9 +145,16 @@ def deleteCartItem(request):
             cart.qty -= 1
             cart.save()
         cart.save()
+        cart_price = cart.Product.curr_price
+        cart_weight = cart.Product.weight
+        cart_qty = cart.qty
         if cart.qty == 0.0:
             cart.delete()
-        return HttpResponse(cart)
+        context['status'] = "Success"
+        context['cart_price'] = cart_price
+        context['cart_weight'] = cart_weight
+        context['cart_qty'] = cart_qty
+        return HttpResponse(json.dumps(context), content_type='application/json')
 
     prod = Product.objects.get(product_id=pid)
     print(prod)
@@ -149,7 +166,6 @@ def deleteCartItem(request):
         price=prod.curr_price,
     )
     cart.save()
-    print(cart)
     try:
         prod.updateProduct(1)
     except ValueError:
@@ -157,12 +173,15 @@ def deleteCartItem(request):
         cart.save()
         if cart.qty == 0.0:
             cart.delete()
-        messages.error(request, "Looks like product is out of stock stay tuned for updates")
-        return redirect("/")
+        context['message'] = "Looks like product is out of stock stay tuned for updates"
+        context['status'] = "Error"
+        return HttpResponse(json.dumps(context), content_type='application/json')
         pass
-    cart = list(Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id']))
-                .select_related('Product'))
-    return HttpResponse(cart)
+    context['status'] = "Success"
+    context['cart_price'] = cart.Product.curr_price
+    context['cart_weight'] = cart.Product.weight
+    context['cart_qty'] = cart.qty
+    return HttpResponse(json.dumps(context), content_type='application/json')
 
 
 # Edit Item listing for listings.html.
