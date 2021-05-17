@@ -1,6 +1,7 @@
 from .models import Product, Customer, Farmer, Cart, Order, OrderContains
 from math import ceil
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from .forms import RegisterUserForm, RegisterFarmerForm, LoginForm, ProductRegisterForm, ProductEditForm, SearchForm
 from django.contrib import messages
 import hashlib
@@ -25,7 +26,10 @@ def checkLogin(request):
     return False
 
 
-def addCartItem(request, pid):
+def addCartItem(request):
+    if request.method != 'GET':
+        return HttpResponse("Request method is not a GET")
+
     custB = False
     # check for user as Customer
     try:
@@ -38,6 +42,8 @@ def addCartItem(request, pid):
     if custB is False:
         messages.error(request, "Sign In as Customer to Add Items to Your Cart.")
         return redirect("/")
+
+    pid = request.GET['pid']
 
     if not Product.objects.all().filter(product_id=pid).exists():
         messages.error(request, "Seems like there is some problem with this products listing. We are working on it.")
@@ -62,7 +68,9 @@ def addCartItem(request, pid):
             return redirect("/")
             pass
         cart.save()
-        return redirect("/")
+        cart = list(Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id']))
+                    .select_related('Product'))
+        return HttpResponse(cart)
 
     prod = Product.objects.get(product_id=pid)
     print(prod)
@@ -85,11 +93,16 @@ def addCartItem(request, pid):
         messages.error(request, "Looks like product is out of stock stay tuned for updates")
         return redirect("/")
         pass
+    cart = list(Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id']))
+                .select_related('Product'))
+    print(cart)
+    return HttpResponse(cart)
 
-    return index(request)
 
+def deleteCartItem(request):
+    if request.method != 'GET':
+        return HttpResponse("Request method is not a GET")
 
-def deleteCartItem(request, pid):
     custB = False
     # check for user as Customer
     try:
@@ -102,6 +115,8 @@ def deleteCartItem(request, pid):
     if custB is False:
         messages.error(request, "Sign In as Customer to Delete Items From Your Cart.")
         return redirect("/")
+
+    pid = request.GET['pid']
 
     if not Product.objects.all().filter(product_id=pid).exists():
         messages.error(request, "Seems like there is some problem with this products listing. We are working on it.")
@@ -122,7 +137,7 @@ def deleteCartItem(request, pid):
         cart.save()
         if cart.qty == 0.0:
             cart.delete()
-        return redirect("/")
+        return HttpResponse(cart)
 
     prod = Product.objects.get(product_id=pid)
     print(prod)
@@ -145,8 +160,9 @@ def deleteCartItem(request, pid):
         messages.error(request, "Looks like product is out of stock stay tuned for updates")
         return redirect("/")
         pass
-
-    return index(request)
+    cart = list(Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id']))
+                .select_related('Product'))
+    return HttpResponse(cart)
 
 
 # Edit Item listing for listings.html.

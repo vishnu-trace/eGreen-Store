@@ -77,11 +77,11 @@ padding-right: 0;
                                 <h6 class="card-title">PER KG: <span id="pp{{i.product_id}}">{{i.per_unit_price|floatformat:2}}</span></h6>
                                 {% if not farmer %}
                                 {% if cart|cartProductSearch:i.product_id %}
-                                    <a href="/deleteitem/{{i.product_id}}"><button  class="btn btn-primary cart">-</button></a>
+                                    <button id="minusButton_{{i.product_id}}" class="minusItemButton btn btn-primary cart" data-pid="{{i.product_id}}" >-</button>
                                     <span>{{ cart|getProductQty:i.product_id }}</span>
-                                    <a href="/additem/{{i.product_id}}"><button  class="btn btn-primary cart">+</button></a>
+                                    <button id="plusButton_{{i.product_id}}" class="plusItemButton btn btn-primary cart" data-pid="{{i.product_id}}">+</button>
                                 {% else %}
-                                    <a href="/additem/{{i.product_id}}"><button id="pr{{i.product_id}}" class="btn btn-primary cart">Add To Cart</button></a>
+                                    <button id="addButton_{{i.product_id}}" class="addItemButton btn btn-primary cart" data-pid="{{i.product_id}}">Add To Cart</button>
                                 {% endif %}
                                 {% endif %}
 
@@ -111,5 +111,45 @@ padding-right: 0;
             <h4 >No products available right now. Come back soon to explore new items.</h4>
     </div>
 {% endif %}
+
+<script type="text/javascript">
+    $('.addItemButton').click(function(){
+    var pid;
+    pid = $(this).attr("data-pid");
+    $.ajax(
+    {
+        type:"GET",
+        url: "/additem",
+        data:{
+                 pid: pid
+        },
+        success: function( data )
+        {
+            cart = data;
+            alert(cart)
+            //$( '#message' ).text(data);
+        }
+     })
+});
+        $('.minusItemButton').click(function(){
+    var pid;
+    pid = $(this).attr("data-pid");
+    $.ajax(
+    {
+        type:"GET",
+        url: "/deleteitem",
+        data:{
+                 pid: pid
+        },
+        success: function( data )
+        {
+            cart = data;
+            alert(cart)
+            //$( '#message' ).text(data);
+        }
+     })
+});
+</script>
+
 {% endblock %}
 
