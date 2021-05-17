@@ -26,13 +26,13 @@ nav {opacity:0.88;}
                     </div>
                 {% for i in cart %}
                     <div class="row">
-                        <h6 class="col-sm-8">{{i.Product.product_name}}</h6>
+                        <h6 class="col-sm-8" style="font-size: 24px;">{{i.Product.product_name}}</h6>
 
-                        <h6 class="col-sm">
-                            <a href="/deleteitem/{{i.Product.product_id}}"><button  class="btn btn-primary cart">-</button></a>
+                        <a href="/deleteitem/{{i.Product.product_id}}"><button  class="btn btn-primary cart">-</button></a>
+                        <p class="col-sm" style="font-size: 24px; max-width: 120px; text-align:center" contenteditable="true">
                             {{i.qty}}
-                            <a href="/additem/{{i.Product.product_id}}"><button  class="btn btn-primary cart">+</button></a>
-                        </h6>
+                        </p>
+                        <a href="/additem/{{i.Product.product_id}}"><button  class="btn btn-primary cart">+</button></a>
 
 
                     </div>
@@ -48,6 +48,7 @@ nav {opacity:0.88;}
                 {% endif %}
         </div>
         <a href="../clearcart/"><button class='btn btn-primary mx-2 my-2' id='clearCart'>Clear Cart</button></a>
+        <a href=""><button class='btn btn-primary mx-2 my-2' id=''>Update Quantity</button></a>
     </div>
     <div class="col my-4">
         <h2>Step 2 - Enter Shipping Address & Other Details:</h2>
@@ -116,9 +117,5 @@ for (item in cart) {
                 </li>`
     $('#items').append(mystr);
 }
-</script>
-<script>
-
-
 </script>
 {% endblock %}
