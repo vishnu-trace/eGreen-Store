@@ -43,14 +43,15 @@ def addCartItem(request):
         pass
 
     if custB is False:
-        messages.error(request, "Sign In as Customer to Add Items to Your Cart.")
-        return redirect("/")
+        context['status'] = "Error"
+        context['message'] = "Sign In as Customer to Add Items to Your Cart."
+        return HttpResponse(json.dumps(context), content_type='application/json')
 
     pid = request.GET['pid']
 
     if not Product.objects.all().filter(product_id=pid).exists():
         context['message'] = "Seems like there is some problem with this products listing. We are working on it."
-        messages.error(request, "Seems like there is some problem with this products listing. We are working on it.")
+        context['status'] = "Error"
         return HttpResponse(json.dumps(context), content_type='application/json')
 
     if Cart.objects.all().filter(Customer=Customer.objects.get(email=request.session['member_id']),
