@@ -67,13 +67,14 @@
                     <h6 class="col-sm-8">{{i.Product.product_name}}</h6>
 
                     <h6 class="col-sm">
-                        <a href="/deleteitem/{{i.Product.product_id}}">
-                            <button class="btn btn-primary cart">-</button>
-                        </a>
-                        {{i.qty}}
-                        <a href="/additem/{{i.Product.product_id}}">
-                            <button class="btn btn-primary cart">+</button>
-                        </a>
+                        <button id="minusButton_{{i.Product.product_id}}" class="minusItemButton btn btn-primary cart"
+                                        data-pid="{{i.Product.product_id}}">-
+                        </button>
+                        <span id='qtySpan_{{i.Product.product_id}}'>{{ i.qty }}</span>
+
+                        <button id="plusButton_{{i.Product.product_id}}" class="addItemButton btn btn-primary cart"
+                                        data-pid="{{i.Product.product_id}}">+
+                        </button>
                     </h6>
                 </div>
                 {% endfor %}
