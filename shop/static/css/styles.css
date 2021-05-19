@@ -1,0 +1,75 @@
+.modal{
+ overflow-y: scroll;
+ width: 100%;
+ height:100%;
+ background-color: rgba(0,0,0,0.5); /* make it half transparent*/
+ position: absolute;
+ top:0px;
+ display: none;  /* It will remain invisible until you open */
+ justify-content: center; /*center horizontally*/
+ align-items: center ; /* center vertically */
+}
+
+
+
+body{
+     background-color: #c7c7c7;
+     background-image: url("../shop/Farms.jpg");
+     background-repeat: no-repeat;
+     background-size: cover;
+     opacity: 1.0;
+}
+nav {
+    opacity:0.88;
+}
+
+.container{
+    background-color: #fafafa;
+    padding:2em;
+    opacity: 0.9;
+    padding-top:0;
+}
+
+.col-md-3{
+    display: inline-block;
+    margin-left:-4px;
+}
+
+.carousel-indicators .active {
+    background-color: blue;
+}
+
+.col-md-3 img{
+    width: 170px;
+    height: 200px;
+}
+
+body .carousel-indicator li{
+    background-color: blue;
+}
+
+body .carousel-indicators{
+    bottom: -40px;
+}
+
+.carousel-indicators li {
+    background-color: #7270fc;
+}
+
+body .carousel-control-prev-icon,
+body .carousel-control-next-icon{
+    background-color: black;
+}
+
+.carousel-control-prev{
+    left:-75px;
+}
+
+.carousel-control-next{
+    right:-75px;
+}
+
+body .no-padding{
+    padding-left: 0,
+    padding-right: 0;
+}

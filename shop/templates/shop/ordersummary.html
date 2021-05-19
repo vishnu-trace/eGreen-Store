@@ -1,16 +1,17 @@
 {% extends 'shop/basic.html' %}
 {% block title%} Order Summary - Egreen Store{% endblock %}
 {% block css %}
-     body{ background-color: #c7c7c7; background-image: url("../static/shop/Farms.jpg"); background-repeat: no-repeat; background-size: cover; opacity: 1.0;}
-    .container{background-color: #fafafa; padding:2em; opacity: 0.9;}
+body{ background-color: #c7c7c7; background-image: url("../static/shop/Farms.jpg"); background-repeat: no-repeat; background-size: cover; opacity: 1.0;}
+.container{background-color: #fafafa; padding:2em; opacity: 0.9;}
 nav {opacity:0.88;}
 {% endblock %}
 {% block body %}
 {% if messages %}
-        {% for message in messages %}
-         {% if message.tags %}  <script>alert("{{ message }}")</script> {% endif %}
+{% for message in messages %}
+{% if message.tags %}
+<script>alert("{{ message }}")</script> {% endif %}
 
-        {% endfor %}
+{% endfor %}
 
 {% endif %}
 <div class="container">
@@ -18,12 +19,12 @@ nav {opacity:0.88;}
         <h2>Order Summary</h2>
         <div class="container" style="margin-top:2em;margin-bottom:2em;">
             <div class="row">
-            <h5 class="col-sm-8">Order ID</h5>
-            <h6 class="col-sm">{{order.order_ID}}</h6>
+                <h5 class="col-sm-8">Order ID</h5>
+                <h6 class="col-sm">{{order.order_ID}}</h6>
             </div>
             <div class="row">
-            <h5 class="col-sm-8">Order Total</h5>
-            <h6 class="col-sm">{{total}}</h6>
+                <h5 class="col-sm-8">Order Total</h5>
+                <h6 class="col-sm">{{total}}</h6>
             </div>
 
         </div>

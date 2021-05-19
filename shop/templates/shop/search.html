@@ -1,53 +1,15 @@
 {% extends 'shop/basic.html' %}
 {% load extras %}
 {% block title%} Egreen Store - Ecommerce Website{% endblock %}
-{% block css %}
-body{ background-color: #c7c7c7; background-image: url("../static/shop/Farms.jpg"); background-repeat: no-repeat; background-size: cover; opacity: 1.0;}
-nav {opacity:0.88;}
-.container{background-color: #fafafa; padding:2em; opacity: 0.9;}
-.col-md-3
-{
-display: inline-block;
-margin-left:-4px;
-}
-.carousel-indicators .active {
-background-color: blue;
-}
-.col-md-3 img{
-width: 170px;
-height: 200px;
-}
-body .carousel-indicator li{
-background-color: blue;
-}
-body .carousel-indicators{
-bottom: -40px;
-}
-.carousel-indicators li {
-background-color: #7270fc;
-}
-body .carousel-control-prev-icon,
-body .carousel-control-next-icon{
-background-color: blue;
-}
-.carousel-control-prev,
-.carousel-control-next{
-top: auto;
-bottom: auto;
-padding-top: 222px;
-}
-body .no-padding{
-padding-left: 0,
-padding-right: 0;
-}
-{% endblock %}
+
 {% block body %}
 {% load static %}
 {% if messages %}
-        {% for message in messages %}
-         {% if message.tags %}  <script>alert("{{ message }}")</script> {% endif %}
+{% for message in messages %}
+{% if message.tags %}
+<script>alert("{{ message }}")</script> {% endif %}
 
-        {% endfor %}
+{% endfor %}
 
 {% endif %}
 {% if search is not None %}
@@ -55,6 +17,7 @@ padding-right: 0;
     <!--Slideshow starts here -->
     {% for product in search %}
     <div class="row">
+        <!-- left and right controls for the slide -->
         <div id="demo{{forloop.counter}}" class="col carousel slide my-3" data-ride="carousel">
             <ul class="carousel-indicators">
                 <li data-target="#demo{{forloop.counter}}" data-slide-to="0" class="active"></li>
@@ -63,24 +26,41 @@ padding-right: 0;
                 {% endfor %}
             </ul>
             <div class="container carousel-inner no-padding">
+                <a class="carousel-control-prev " href="#demo{{forloop.counter}}" data-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </a>
+                <a class="carousel-control-next" href="#demo{{forloop.counter}}" data-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </a>
                 <div class="carousel-item active">
+                    <h3 class="my-4 sm no-padding"> {{product.0.category}}</h3>
                     {% for i in search %}
                     <div class="col-xs-3 col-sm-3 col-md-3">
                         <div class="card align-items-center" style="width: 18rem;">
                             <img src='/media/{{i.image}}' class="card-img-top" alt="...">
-                            <div class="card-body">
+                            <div class="card-body" id="card_{{i.product_id}}">
                                 <h5 class="card-title" id="namepr{{i.product_id}}">{{i.product_name}}</h5>
-                                <h6 class="card-title">Current Price: <span id="pricepr{{i.product_id}}">{{i.curr_price|floatformat:2}}</span></h6>
-                                <h6 class="card-title">BulkPrice: <span id="bulkprice{{i.product_id}}">{{i.bulk_price|floatformat:2}}</span></h6>
-                                 <h6 class="card-title">Available Weight:  <span id="wght{{i.product_id}}">{{i.weight}}</span></h6>
-                                <h6 class="card-title">PER KG: <span id="pp{{i.product_id}}">{{i.per_unit_price|floatformat:2}}</span></h6>
+                                <h6 class="card-title">Current Price: <span
+                                        id="pricepr_{{i.product_id}}">{{i.curr_price|floatformat:2}}</span></h6>
+                                <h6 class="card-title">BulkPrice: <span
+                                        id="bulkprice_{{i.product_id}}">{{i.bulk_price|floatformat:2}}</span></h6>
+                                <h6 class="card-title">Available Weight: <span
+                                        id="wght_{{i.product_id}}">{{i.weight}}</span></h6>
+                                <h6 class="card-title">PER KG: <span
+                                        id="pp_{{i.product_id}}">{{i.per_unit_price|floatformat:2}}</span></h6>
                                 {% if not farmer %}
                                 {% if cart|cartProductSearch:i.product_id %}
-                                    <a href="/deleteitem/{{i.product_id}}"><button  class="btn btn-primary cart">-</button></a>
-                                    <span>{{ cart|getProductQty:i.product_id }}</span>
-                                    <a href="/additem/{{i.product_id}}"><button  class="btn btn-primary cart">+</button></a>
+                                <button id="minusButton_{{i.product_id}}" class="minusItemButton btn btn-primary cart"
+                                        data-pid="{{i.product_id}}">-
+                                </button>
+                                <span id='qtySpan_{{i.product_id}}'>{{ cart|getProductQty:i.product_id }}</span>
+                                <button id="plusButton_{{i.product_id}}" class="addItemButton btn btn-primary cart"
+                                        data-pid="{{i.product_id}}">+
+                                </button>
                                 {% else %}
-                                    <a href="/additem/{{i.product_id}}"><button id="pr{{i.product_id}}" class="btn btn-primary cart">Add To Cart</button></a>
+                                <button id="addButton_{{i.product_id}}" class="addItemButton btn btn-primary cart"
+                                        data-pid="{{i.product_id}}">Add To Cart
+                                </button>
                                 {% endif %}
                                 {% endif %}
 
@@ -95,19 +75,13 @@ padding-right: 0;
                 </div>
             </div>
         </div>
-        <!-- left and right controls for the slide -->
-        <a class="carousel-control-prev" href="#demo{{forloop.counter}}" data-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </a>
-        <a class="carousel-control-next" href="#demo{{forloop.counter}}" data-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </a>
+
     </div>
     {% endfor %}
 </div>
 {% else %}
-    <div class="container col-md-6 col-sm-6" style="margin-top:10em;">
-            <h4 >No products found based on your search.</h4>
-    </div>
+<div class="container col-md-6 col-sm-6" style="margin-top:10em;">
+    <h4>No products available right now. Come back soon to explore new items.</h4>
+</div>
 {% endif %}
 {% endblock %}

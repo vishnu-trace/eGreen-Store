@@ -2,31 +2,32 @@
 {% load widget_tweaks %}
 {% block title%} Register - Customer | Egreen Store{% endblock %}
 {% block css %}
-     body{ background-color: #c7c7c7; background-image: url("../../static/shop/Farms.jpg"); background-repeat: no-repeat; background-size: cover; opacity: 1.0;}
+body{ background-color: #c7c7c7; background-image: url("../../static/shop/Farms.jpg"); background-repeat: no-repeat; background-size: cover; opacity: 1.0;}
 nav {opacity:0.88;}
-    .container{background-color: #fafafa; padding:2em; opacity: 0.9;}
+.container{background-color: #fafafa; padding:2em; opacity: 0.9;}
 {% endblock %}
 {% block body %}
 {% if messages %}
-        {% for message in messages %}
-         {% if message.tags %}  <script>alert("{{ message }}")</script> {% endif %}
+{% for message in messages %}
+{% if message.tags %}
+<script>alert("{{ message }}")</script> {% endif %}
 
-        {% endfor %}
+{% endfor %}
 
 {% endif %}
 <div class="container col-md-4" style="margin-top: 3em; margin-bottom: 5em;">
-<h2 class="cold-md-6" style="margin-bottom: 1em;">Customer Registration Form</h2>
-<form action="../../registration/customer/" method="post">
-    {% csrf_token %}
-    <!--for loop to print form elements-->
-    {% for field in form %}
-    <div class="form-group align-items-center">
-        {{ field.label_tag }}
-        {% render_field field class="form-control" %}
-        {{ field.errors }}
-    </div>
-{% endfor %}
-    <input type="submit" value="Submit" class="btn btn-primary">
-</form>
+    <h2 class="cold-md-6" style="margin-bottom: 1em;">Customer Registration Form</h2>
+    <form action="../../registration/customer/" method="post">
+        {% csrf_token %}
+        <!--for loop to print form elements-->
+        {% for field in form %}
+        <div class="form-group align-items-center">
+            {{ field.label_tag }}
+            {% render_field field class="form-control" %}
+            {{ field.errors }}
+        </div>
+        {% endfor %}
+        <input type="submit" value="Submit" class="btn btn-primary">
+    </form>
 </div>
 {% endblock %}

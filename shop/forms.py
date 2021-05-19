@@ -69,4 +69,3 @@ class ProductEditForm(forms.Form):
     bulk_price = forms.FloatField(label='Bulk Price', required=True)
     per_unit_price = forms.FloatField(label='Per Kg Price', required=True)
     image = forms.ImageField(required=False)
-

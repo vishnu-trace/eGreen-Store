@@ -1,5 +1,7 @@
 //To send cart addItem and remove item requests and update the corresponding listing cards
 
+$('#cartModal').modal("show");
+
 $(function(){
     $('body').on('click', '.addItemButton', function(){
     var pid;

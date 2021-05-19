@@ -260,7 +260,7 @@ def deleteItem(request, pid):
         messages.error(request, 'Product ID not valid.')
         redirect("/")
     messages.info(request, "You will not be able to make new listings for next 10-30 days."
-                  " Exact ban duration will be posted by registered mail.")
+                           " Exact ban duration will be posted by registered mail.")
     return redirect("/")
 
 
@@ -426,7 +426,7 @@ def clearCart(request):
             cart = Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id']))
             for i in cart:
                 Prod = Product.objects.get(product_id=i.Product.product_id)
-                Prod.updateProduct(-1*i.qty)
+                Prod.updateProduct(-1 * i.qty)
                 Prod.save()
             Cart.objects.filter(Customer=Customer.objects.get(email=request.session['member_id'])).delete()
     return redirect('../checkout/')
@@ -696,7 +696,9 @@ def search(request, srcstr):
                     total += c.Product.curr_price * c.qty
         form = SearchForm()
 
-    return render(request, 'shop/search.html', {'farmer': farmer, 'cart': cart, 'search': searchT, 'loggedIn': loggedIn, 'total':total, 'srcForm': form})
+    return render(request, 'shop/search.html',
+                  {'farmer': farmer, 'cart': cart, 'search': searchT, 'loggedIn': loggedIn, 'total': total,
+                   'srcForm': form})
 
 
 def productView(request, myid):
@@ -704,4 +706,3 @@ def productView(request, myid):
     print("View")
     product = Product.objects.filter(product_id=myid)
     return render(request, 'shop/prodView.html', {'product': product[0]})
-

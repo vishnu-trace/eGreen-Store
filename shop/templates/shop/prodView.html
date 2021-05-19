@@ -2,10 +2,11 @@
 {% block title%} {{product.product_name}} - Egreen Store{% endblock %}
 {% block body %}
 {% if messages %}
-        {% for message in messages %}
-         {% if message.tags %}  <script>alert("{{ message }}")</script> {% endif %}
+{% for message in messages %}
+{% if message.tags %}
+<script>alert("{{ message }}")</script> {% endif %}
 
-        {% endfor %}
+{% endfor %}
 
 {% endif %}
 <div class="container md-6" style="padding-top:5em;padding-left:15em;">
@@ -57,5 +58,6 @@ $('.cart').click(function() {
 $('#popcart').popover();
 
 document.getElementById("popcart").setAttribute('data-content', '<h5>Items in your shopping cart</h5>');
+
 </script>
 {% endblock %}
