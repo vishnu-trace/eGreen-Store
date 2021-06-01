@@ -28,6 +28,7 @@ class Product(models.Model):
     objects = None
     product_id = models.CharField(primary_key=True, max_length=64)
     expiry_date = models.DateField()
+    unit = models.BooleanField()
     weight = models.FloatField(default=0)
     weight_hold = models.FloatField(default=0)
     bulk_price = models.FloatField(default=0)

@@ -2,6 +2,13 @@ from django import forms
 import datetime
 from tempus_dominus.widgets import DatePicker
 
+CAT_CHOICES =(
+    ("1", "Fruits"),
+    ("2", "Vegetables"),
+    ("3", "Grains"),
+    ("4", "Dairy"),
+)
+
 
 class SearchForm(forms.Form):
     searchText = forms.CharField(label='Search', max_length=64, required=False)
@@ -33,7 +40,8 @@ class LoginForm(forms.Form):
 
 class ProductRegisterForm(forms.Form):
     product_name = forms.CharField(label='Name of The Product', max_length=32, required=True)
-    category = forms.CharField(label='Category of The Product', max_length=64, required=True)
+    #category = forms.CharField(label='Category of The Product', max_length=64, required=True)
+    category = forms.ChoiceField(choices=CAT_CHOICES, widget=forms.Select)
     expiry_date = forms.DateField(
         input_formats=['%d/%m/%Y'],
         required=True,
@@ -45,9 +53,10 @@ class ProductRegisterForm(forms.Form):
         ),
         initial=datetime.datetime.now().strftime("%m/%d/%Y"),
     )
-    weight = forms.FloatField(label='Weight', required=True)
+    unit = forms.ChoiceField(choices=((1, "KG"), (2, "Units")), widget=forms.Select)
+    weight = forms.FloatField(label='Weight / Unit', required=True)
     bulk_price = forms.FloatField(label='Bulk Price', required=True)
-    per_unit_price = forms.FloatField(label='Per Kg Price', required=True)
+    per_unit_price = forms.FloatField(label='Per Unit Price', required=True)
     image = forms.ImageField(required=False)
 
 

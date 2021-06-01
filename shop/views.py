@@ -10,6 +10,13 @@ import time
 import json
 import jsonpickle
 
+CAT_CHOICES ={
+    "1": "Fruits",
+    "2": "Vegetables",
+    "3": "Grains",
+    "4": "Dairy",
+}
+
 
 def checkLogin(request):
     loggedIn = False
@@ -604,12 +611,19 @@ def product(response):
         email = response.session['member_id']
         if form.is_valid():
             product_name = form.cleaned_data['product_name']
-            category = form.cleaned_data['category']
+            category = CAT_CHOICES.get((form.cleaned_data['category']), 'undefined')
             expiry_date = form.cleaned_data['expiry_date']
             weight = form.cleaned_data['weight']
             bulk_price = form.cleaned_data['bulk_price']
             per_unit_price = form.cleaned_data['per_unit_price']
             image = form.cleaned_data['image']
+            unitf = form.cleaned_data['unit']
+            print(unitf)
+            if unitf is '2':
+                unit = True
+            else:
+                unit = False
+            print(unit)
 
             # product id is generated from string concatenation of product_name+farm.email+current-time
             idTemp = (product_name + email + (datetime.datetime.now().strftime("%m/%d/%Y")))
@@ -619,6 +633,7 @@ def product(response):
                 product_id=product_id,
                 expiry_date=expiry_date,
                 weight=weight,
+                unit=unit,
                 bulk_price=bulk_price,
                 curr_price=per_unit_price,
                 per_unit_price=per_unit_price,
