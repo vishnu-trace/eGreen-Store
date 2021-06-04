@@ -389,7 +389,7 @@ def placeOrder(request):
                 Customer=Customer.objects.get(email=email),
                 Date=date,
                 Bill_amount=total,
-                Status='Completed',
+                Status=Order.StatusTags.CREATED,
                 Due=0.0
             )
             newOrder.save()
@@ -619,7 +619,7 @@ def product(response):
             image = form.cleaned_data['image']
             unitf = form.cleaned_data['unit']
             print(unitf)
-            if unitf is '2':
+            if unitf == '2':
                 unit = True
             else:
                 unit = False

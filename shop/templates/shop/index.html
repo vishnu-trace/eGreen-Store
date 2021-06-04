@@ -48,19 +48,22 @@
                                 <h6 class="card-title">PER KG: <span id="pp_{{i.product_id}}">{{i.per_unit_price|floatformat:2}}</span>
                                 </h6>
                                 {% if not farmer %}
-                                {% if cart|cartProductSearch:i.product_id %}
-                                <button id="minusButton_{{i.product_id}}" class="minusItemButton btn btn-primary cart"
-                                        data-pid="{{i.product_id}}">-
-                                </button>
-                                <span id='qtySpan_{{i.product_id}}'>{{ cart|getProductQty:i.product_id }}</span>
-                                <button id="plusButton_{{i.product_id}}" class="addItemButton btn btn-primary cart"
-                                        data-pid="{{i.product_id}}">+
-                                </button>
-                                {% else %}
-                                <button id="addButton_{{i.product_id}}" class="addItemButton btn btn-primary cart"
-                                        data-pid="{{i.product_id}}">Add To Cart
-                                </button>
-                                {% endif %}
+                                <div class="controls align-items-center" id="ctrl_{{i.product_id}}">
+                                    {% if cart|cartProductSearch:i.product_id %}
+                                    <button id="minusButton_{{i.product_id}}"
+                                            class="minusItemButton btn btn-primary cart"
+                                            data-pid="{{i.product_id}}">-
+                                    </button>
+                                    <span id='qtySpan_{{i.product_id}}'>{{ cart|getProductQty:i.product_id }}</span>
+                                    <button id="plusButton_{{i.product_id}}" class="addItemButton btn btn-primary cart"
+                                            data-pid="{{i.product_id}}">+
+                                    </button>
+                                    {% else %}
+                                    <button id="addButton_{{i.product_id}}" class="addItemButton btn btn-primary cart"
+                                            data-pid="{{i.product_id}}">Add To Cart
+                                    </button>
+                                    {% endif %}
+                                </div>
                                 {% endif %}
 
                             </div>
@@ -83,6 +86,10 @@
     <h4>No products available right now. Come back soon to explore new items.</h4>
 </div>
 {% endif %}
+
+<script>
+    var cart = "{{cart}}";
+</script>
 
 
 {% endblock %}

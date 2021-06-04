@@ -17,5 +17,5 @@ def getProductQty(cart, pid):
     if cart is not None:
         for j in cart:
             if j.Product.product_id == pid:
-                return j.qty
+                return int(j.qty)
     return 0

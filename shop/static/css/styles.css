@@ -63,10 +63,12 @@ body .carousel-control-next-icon{
 
 .carousel-control-prev{
     left:-75px;
+    padding: auto;
 }
 
 .carousel-control-next{
     right:-75px;
+    padding: auto;
 }
 
 body .no-padding{

@@ -1,5 +1,6 @@
 from django.db import models
 import hashlib
+from django.utils.translation import gettext_lazy as _
 
 
 # Create your models here.
@@ -92,11 +93,24 @@ class Cart(models.Model):
 
 # Order Model for once Order is placed
 class Order(models.Model):
+
+    class StatusTags(models.IntegerChoices):
+        CREATED = 0, _('Order Created')
+        PENDING = 1, _('Booking Pending')
+        BOOKED = 2, _('Booking Confirmed')
+        BFAILED = 3, _('Booking Failed')
+        INITIATED = 4, _('Payment Initiated')
+        PFAILED = 5, _('Payment Failed')
+        PLACED = 6, _('Order Placed')
+        DISPATCHED = 7, _('Dispatched')
+        DELIVERED = 8, _('Order Delivered')
+        __empty__ = _('(Unknown)')
+
     order_ID = models.CharField(primary_key=True, max_length=128)
     Customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     Date = models.CharField(max_length=24)
     Bill_amount = models.FloatField(default=0.0)
-    Status = models.CharField(default='Pending', max_length=12)
+    Status = models.IntegerField(choices=StatusTags.choices, default=StatusTags.CREATED)
     Due = models.FloatField(default=0.0)
 
     def __str__(self):

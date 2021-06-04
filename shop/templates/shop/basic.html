@@ -63,10 +63,10 @@
                     <br><br>
                 </div>
                 {% for i in cart %}
-                <div class="row">
+                <div class="row" id="row_{{i.Product.product_id}}">
                     <h6 class="col-sm-8">{{i.Product.product_name}}</h6>
 
-                    <h6 class="col-sm">
+                    <h6 class="col-sm modalControls">
                         <button id="minusButton_{{i.Product.product_id}}" class="minusItemButton btn btn-primary cart"
                                         data-pid="{{i.Product.product_id}}">-
                         </button>
