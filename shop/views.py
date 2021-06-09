@@ -35,18 +35,7 @@ CAT_CHOICES ={
 
 
 def checkLogin(request):
-    loggedIn = False
-    farmer = False
-    try:
-        if request.session['loggedIn'] is True:
-            loggedIn = True
-        if request.session['farmer'] is True:
-            farmer = True
-    except AttributeError:
-        pass
-    except KeyError:
-        pass
-    if loggedIn or farmer:
+    if request.session.get('farmer', False) or request.session.get('loggedIn', False):
         return True
     return False
 
@@ -55,17 +44,10 @@ def addCartItem(request):
     if request.method != 'GET':
         return HttpResponse("Request method is not a GET")
 
-    custB = False
-    context = {}
     # check for user as Customer
-    try:
-        if request.session['customer'] is True:
-            custB = True
-            print("True")
-    except KeyError:
-        pass
+    context = {}
 
-    if custB is False:
+    if not request.session.get('customer', False):
         context['status'] = "Error"
         context['message'] = "Sign In as Customer to Add Items to Your Cart."
         return HttpResponse(json.dumps(context), content_type='application/json')
@@ -136,16 +118,9 @@ def deleteCartItem(request):
 
     # context is used for passing messages and cart data to front end
     context = {}
-    custB = False
-    # check for user as Customer
-    try:
-        if request.session['customer'] is True:
-            custB = True
-            print("True")
-    except KeyError:
-        pass
 
-    if custB is False:
+    # check for user as Customer
+    if not request.session.get('customer', False):
         context['message'] = "Sign In as Customer to Delete Items From Your Cart."
         context['status'] = "Error"
         return HttpResponse(json.dumps(context), content_type='application/json')
@@ -216,14 +191,10 @@ def deleteCartItem(request):
 
 # Edit Item listing for listings.html.
 def editItem(response, pid):
-    keys = list(response.session.keys())
-    try:
-        if 'loggedIn' not in keys and response.session['farmer'] is not True:
-            return redirect("/")
-    except KeyError:
-        pass
-    except ValueError:
-        pass
+    # check for logIn
+    if not response.session.get('loggedIn', False) and not response.session.get('farmer', False):
+        return redirect("/")
+
     if response.method == "POST":
         form = ProductEditForm(response.POST, response.FILES)
         if form.is_valid():
@@ -268,14 +239,10 @@ def editItem(response, pid):
 
 # Delete Item listing for listings.html.
 def deleteItem(request, pid):
-    keys = list(request.session.keys())
-    try:
-        if 'loggedIn' not in keys and request.session['farmer'] is not True:
-            return redirect("/")
-    except KeyError:
-        pass
-    except ValueError:
-        pass
+    # Check for Farmer as the user
+    if not request.session.get('loggedIn', False) and not request.session.get('farmer', False):
+        return redirect("/")
+
     if Product.objects.filter(product_id=pid).exists() and Product.objects.filter(farmer=Farmer.objects
             .get(email=request.session['member_id'])).exists():
         Product.objects.filter(product_id=pid).delete()
@@ -289,11 +256,13 @@ def deleteItem(request, pid):
 
 # Create your views here.
 def index(request):
-    loggedIn = False
-    farmer = False
-    customerFlag = False
+    loggedIn = request.session.get('loggedIn', False)
+    farmer = request.session.get('farmer', False)
+    customerFlag = request.session.get('customer', False)
     allProds = None
     cart = None
+
+    # for carousel
     if Product.objects.all().exists():
         allProds = []
         catprods = Product.objects.values('category', 'product_id')
@@ -303,25 +272,6 @@ def index(request):
             n = len(prod)
             nSlides = n // 4 + ceil((n / 4) - (n // 4))
             allProds.append([prod, range(1, nSlides), nSlides])
-
-    # Test for session with member email
-    try:
-        if request.session['loggedIn'] is True:
-            loggedIn = True
-        if request.session['farmer'] is True:
-            farmer = True
-
-    except AttributeError:
-        pass
-    except KeyError:
-        pass
-    try:
-        if request.session['customer'] is True:
-            customerFlag = True
-    except AttributeError:
-        pass
-    except KeyError:
-        pass
 
     # Gathering Cart Items for given Customer
     if customerFlag is True:
@@ -340,19 +290,11 @@ def checkout(request):
     if checkLogin(request) is False:
         messages.info(request, 'You are not Logged In')
         return redirect("/")
-    loggedIn = False
-    customerFlag = False
+
+    loggedIn = request.session.get('loggedIn', False)
+    customerFlag = request.session.get('customer', False)
     cart = None
     total = 0.0
-
-    try:
-        if request.session['customer'] is True:
-            customerFlag = True
-            loggedIn = True
-    except AttributeError:
-        pass
-    except KeyError:
-        pass
 
     # Gathering Cart Items for given Customer
     if customerFlag is True:
@@ -373,18 +315,15 @@ def placeOrder(request):
     if checkLogin(request) is False:
         messages.info(request, 'You are not Logged In')
         return redirect("/")
-    loggedIn = False
-    customerFlag = False
+
+    loggedIn = request.session.get('loggedIn', False)
+    customerFlag = request.session.get('customer', False)
     cart = None
     email = None
     total = 0.0
     newOrder = None
 
-    if request.session.get('customer', False) is True:
-        customerFlag = True
-        loggedIn = True
-
-        # Gathering Cart items and deleting them for given Customer
+    # Gathering Cart items and deleting them for given Customer
     if customerFlag is True:
         if Cart.objects.all().filter(
                 Customer=Customer.objects.get(email=request.session['member_id'])).exists() is True:
@@ -428,19 +367,8 @@ def clearCart(request):
     if checkLogin(request) is False:
         messages.info(request, 'You are not Logged In')
         return redirect("/")
-    loggedIn = False
-    customerFlag = False
-    cart = None
 
-    try:
-        if request.session['customer'] is True:
-            customerFlag = True
-            loggedIn = True
-
-    except AttributeError:
-        pass
-    except KeyError:
-        pass
+    customerFlag = request.session.get('customer', False)
 
     # Gathering Cart items and deleting them for given Customer
     if customerFlag is True:
@@ -457,18 +385,9 @@ def clearCart(request):
 
 # For Show all product listing (Farmer Only)
 def showListings(request):
-    loggedIn = False
-    farmer = False
+    loggedIn = request.session.get('loggedIn', False)
+    farmer = request.session.get('farmer', False)
 
-    try:
-        if request.session['loggedIn'] is True:
-            loggedIn = True
-        if request.session['farmer'] is True:
-            farmer = True
-    except AttributeError:
-        pass
-    except KeyError:
-        pass
     if not farmer:
         messages.info(request, 'You are not Logged In as Farmer.')
         redirect('/')
@@ -687,14 +606,9 @@ def product(response):
             messages.info(response, 'Your new product successfully added!')
             redirect("/")
     else:
-        keys = list(response.session.keys())
-        try:
-            if 'loggedIn' not in keys and response.session['farmer'] is not True:
-                return redirect("/")
-        except KeyError:
-            pass
-        except ValueError:
-            pass
+        if not response.session.get('loggedIn', False) and not response.session.get('farmer', False):
+            return redirect("/")
+
         form = ProductRegisterForm()
     return render(response, 'shop/registration/product.html', {"form": form, "loggedIn": True, "Farmer": True})
 
@@ -707,31 +621,12 @@ def search(request, srcstr):
     if request.method == "POST":
         form = SearchForm(request.POST)
         srcstr = form.data['searchText']
-        loggedIn = False
-        farmer = False
-        customerFlag = False
+        loggedIn = request.session.get('loggedIn', False)
+        farmer = request.session.get('farmer', False)
+        customerFlag = request.session.get('customer', False)
         searchT = None
         cart = None
         total = 0.0
-
-        # Test for session with member email
-        try:
-            if request.session['loggedIn'] is True:
-                loggedIn = True
-            if request.session['farmer'] is True:
-                farmer = True
-
-        except AttributeError:
-            pass
-        except KeyError:
-            pass
-        try:
-            if request.session['customer'] is True:
-                customerFlag = True
-        except AttributeError:
-            pass
-        except KeyError:
-            pass
 
         searchT = list(Product.objects.filter(product_name__contains=srcstr))
         if not searchT:
