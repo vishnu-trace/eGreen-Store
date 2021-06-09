@@ -36,6 +36,7 @@ class RegisterUserForm(forms.Form):
     email = forms.EmailField(label='Email', max_length=64, required=True)
     phone = forms.CharField(label='Phone', max_length=10, required=True)
     address = forms.CharField(label='Address', max_length=500, required=True, widget=forms.Textarea)
+    zip = forms.IntegerField(label='Zip Code', max_value=999999, required=True)
     password = forms.CharField(label='Password', required=True, widget=forms.PasswordInput)
     confirmPassword = forms.CharField(label='Confirm Password', required=True, widget=forms.PasswordInput)
 

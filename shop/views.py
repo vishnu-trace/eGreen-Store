@@ -13,7 +13,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
+import os
 
 from .models import Product, Customer, Farmer, Cart, Order, OrderContains
 from math import ceil
@@ -25,7 +25,6 @@ import hashlib
 import datetime
 import time
 import json
-import jsonpickle
 
 CAT_CHOICES ={
     "1": "Fruits",
@@ -553,6 +552,10 @@ def customer(response):
         return redirect("/", messages='You are already Logged In')
 
     if response.method == "POST":
+        filePath = os.path.join(os.path.dirname(__file__), 'zips.txt')
+        filePtr = open(filePath, 'r')
+        zipContent = filePtr.read()
+        zips = tuple(zipContent.split(","))
         form = RegisterUserForm(response.POST)
         if form.is_valid():
             # Form Cleaning
@@ -560,6 +563,7 @@ def customer(response):
             email = form.cleaned_data['email']
             phone = form.cleaned_data['phone']
             address = form.cleaned_data['address']
+            zip = form.cleaned_data['zip']
             password = form.cleaned_data['password']
             confirmPassword = form.cleaned_data['confirmPassword']
 
@@ -572,10 +576,21 @@ def customer(response):
             if Customer.objects.all().filter(email=email).exists():
                 form.add_error('email', "This email is already registered.")
                 return render(response, 'shop/registration/customer.html', {"form": form})
+
+            # phone Verification
+            if len(phone) != 10:
+                form.add_error('phone', "The phone number is not valid.")
+                return render(response, 'shop/registration/customer.html', {"form": form})
+
+            # zip Verification
+            if len(str(zip)) != 6 or str(zip) not in zips:
+                form.add_error('zip', "The zip code is not valid.")
+                return render(response, 'shop/registration/customer.html', {"form": form})
+
             password = hashlib.sha256(password.encode())
 
             # New Object Creation
-            newCust = Customer(CU_name=name, email=email, phone=phone, address=address, password=password.hexdigest())
+            newCust = Customer(CU_name=name, email=email, phone=phone, address=address, zip=zip, password=password.hexdigest())
             newCust.save()
         messages.info(response, 'Your Account has been Registered successfully!')
         return redirect("/", messages='Your Account has been Registered successfully!')
@@ -610,6 +625,12 @@ def farmer(response):
             if Farmer.objects.all().filter(email=email).exists():
                 form.add_error('email', "This email is already registered.")
                 return render(response, 'shop/registration/farmer.html', {"form": form})
+
+            # phone Verification
+            if len(phone) != 10:
+                form.add_error('phone', "The phone number is not valid.")
+                return render(response, 'shop/registration/customer.html', {"form": form})
+
             password = hashlib.sha256(password.encode())
 
             # New Object Creation

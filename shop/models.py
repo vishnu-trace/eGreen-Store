@@ -86,6 +86,7 @@ class Customer(models.Model):
     email = models.CharField(max_length=64, default="", unique=True)
     phone = models.CharField(max_length=10, default="")
     address = models.CharField(max_length=500, default="")
+    zip = models.IntegerField()
     password = models.CharField(max_length=64, default="")
 
     # Function to verify object password to the password provided
